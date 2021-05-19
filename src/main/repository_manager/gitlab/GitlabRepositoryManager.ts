@@ -130,13 +130,17 @@ export class GitlabRepositoryManager implements RepositoryManager { // TODO crea
         return false;
     }
 
-    public async provideContentToCodeAndTestRepository(codeRepositoryFiles: RepositoryFile[], testRepositoryFiles: RepositoryFile[]): Promise<void> {
+    public async provideContentToCodeRepository(codeRepositoryFiles: RepositoryFile[]): Promise<void> {
         let codeRepositoryCommitActions = this.convertFileArrayToCommits(codeRepositoryFiles);
-        let testRepositoryCommitActions = this.convertFileArrayToCommits(testRepositoryFiles);
 
         if (!(await this.IsAtLeastOneCommitInRepository(this.codeRepository!))) {
             await gitlab.Commits.create(this.codeRepository!.id, "master", "initial commit", codeRepositoryCommitActions);
         }
+    }
+
+    public async provideContentToTestRepository(testRepositoryFiles: RepositoryFile[]): Promise<void> {
+        let testRepositoryCommitActions = this.convertFileArrayToCommits(testRepositoryFiles);
+
         if (this.testRepository && testRepositoryCommitActions.length > 0 && !(await this.IsAtLeastOneCommitInRepository(this.testRepository!))) {
             await gitlab.Commits.create(this.testRepository.id, "master", "initial commit", testRepositoryCommitActions);
         }
@@ -157,7 +161,7 @@ export class GitlabRepositoryManager implements RepositoryManager { // TODO crea
         return commits.length > 0;
     }
 
-    public getLinkToTestPage(): String {
+    public getLinkToTestPage(): string {
         let link;
         if (this.testRepository == null) {
             link = this.codeRepository!.web_url;
@@ -188,11 +192,11 @@ export class GitlabRepositoryManager implements RepositoryManager { // TODO crea
         }
     }
 
-    public getLinkToCodeRepository(): String {
+    public getLinkToCodeRepository(): string {
         return this.codeRepository!.web_url;
     }
 
-    public getLinkToTestRepository(): String {
+    public getLinkToTestRepository(): string {
         return this.testRepository!.web_url;
     }
 

@@ -7,9 +7,10 @@ export interface RepositoryManager {
     createTestRepository(repositoryName: string): Promise<void>;
     addMembersToCodeRepository(members: string[] | undefined): Promise<void>;
     linkCodeAndTestRepository(): Promise<void>;
-    provideContentToCodeAndTestRepository(codeRepositoryFiles: RepositoryFile[], testRepositoryFiles: RepositoryFile[]): Promise<void>;
+    provideContentToCodeRepository(codeRepositoryFiles: RepositoryFile[]): Promise<void>;
+    provideContentToTestRepository(testRepositoryFiles: RepositoryFile[]): Promise<void>;
     addOverviewToOverviewRepository(overviewContent: RepositoryFile): Promise<void>;
-    getLinkToCodeRepository(): String;
-    getLinkToTestRepository(): String;
-    getLinkToTestPage(): String;
+    getLinkToCodeRepository(): string;
+    getLinkToTestRepository(): string;
+    getLinkToTestPage(): string;
 }

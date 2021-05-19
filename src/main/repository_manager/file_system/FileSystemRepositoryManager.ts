@@ -14,8 +14,8 @@ export class FileSystemRepositoryManager implements RepositoryManager {
     private readonly codeRepoFolder = path.join(this.outputFolder, 'code');
     private readonly testRepoFolder = path.join(this.outputFolder, 'test');
 
-    private codeRepository: string = "";
-    private testRepository: string = "";
+    private codeRepository?: string;
+    private testRepository?: string;
 
     private repositoryConfig = ConfigManager.getInstance().getRepositoryConfig();
 
@@ -75,9 +75,16 @@ export class FileSystemRepositoryManager implements RepositoryManager {
         return; // no pipelines on file system possible
     }
 
-    async provideContentToCodeAndTestRepository(codeRepositoryFiles: RepositoryFile[], testRepositoryFiles: RepositoryFile[]): Promise<void> {
-        this.writeFilesToFolder(codeRepositoryFiles, this.codeRepository);
-        this.writeFilesToFolder(testRepositoryFiles, this.testRepository);
+    async provideContentToCodeRepository(codeRepositoryFiles: RepositoryFile[]): Promise<void> {
+        if (this.codeRepository) {
+            this.writeFilesToFolder(codeRepositoryFiles, this.codeRepository);
+        } 
+    }
+
+    async provideContentToTestRepository(testRepositoryFiles: RepositoryFile[]): Promise<void> {
+        if (this.testRepository) {
+            this.writeFilesToFolder(testRepositoryFiles, this.testRepository);
+        }
     }
 
     private writeFilesToFolder(repositoryFiles: RepositoryFile[], folderPath: string): void {
@@ -92,15 +99,15 @@ export class FileSystemRepositoryManager implements RepositoryManager {
         }
     }
 
-    getLinkToTestPage(): String {
-        return this.testRepository;
+    getLinkToTestPage(): string {
+        return this.testRepository ? this.testRepository : "";
     }
 
-    getLinkToCodeRepository(): String {
-        return this.codeRepository;
+    getLinkToCodeRepository(): string {
+        return this.codeRepository ? this.codeRepository : "";
     }
 
-    getLinkToTestRepository(): String {
-        return this.testRepository;
+    getLinkToTestRepository(): string {
+        return this.testRepository ? this.testRepository : "";
     }
 }

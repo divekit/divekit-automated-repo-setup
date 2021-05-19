@@ -3,7 +3,6 @@ import { RepositoryFile } from "./RepositoryFile";
 import { ContentReplacer } from '../content_variation/ContentReplacer';
 import { FileManipulatorManager } from '../file_manipulator/FileManipulatorManager';
 import { IndividualRepository } from '../repository_creation/IndividualRepository';
-import { IndividualVariation } from '../content_variation/IndividualVariation';
 import { IndividualSelectionCollection } from '../content_variation/selections/IndividualSelectionCollection';
 import { ConfigManager } from "../config/ConfigManager";
 
@@ -48,7 +47,11 @@ export class ContentProvider {
 
         codeRepositoryFiles = this.filterIndividualRepositoryFiles(codeRepositoryFiles); // TODO better solution instead of 2 times filtering
         testRepositoryFiles = this.filterIndividualRepositoryFiles(testRepositoryFiles);
-        await this.repositoryManager.provideContentToCodeAndTestRepository(codeRepositoryFiles, testRepositoryFiles);
+
+        await this.repositoryManager.provideContentToCodeRepository(codeRepositoryFiles);
+        if (ConfigManager.getInstance().getRepositoryConfig().general.createTestRepository) {
+            await this.repositoryManager.provideContentToTestRepository(testRepositoryFiles);
+        }
     }
 
     private filterIndividualRepositoryFiles(individualRepositoryFiles: RepositoryFile[]): RepositoryFile[] {
