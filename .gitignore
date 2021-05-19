@@ -4,10 +4,10 @@ node_modules/
 build/
 .idea
 
-overview_folder/
-test_folder/
-tmp_folder/
-individual_repositories_folder/
+overview/
+test/
+tmp/
+individual_repositories/
 
 config/relationsConfig.json
 config/repositoryConfig.json

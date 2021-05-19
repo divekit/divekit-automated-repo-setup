@@ -9,7 +9,7 @@ import { ContentProvider } from "../content_manager/ContentProvider";
 
 export class OverviewGenerator {
     
-    private readonly overviewFolder = path.join(__dirname, '..', '..', '..', 'overview_folder');
+    private readonly overviewFolder = path.join(__dirname, '..', '..', '..', 'overview');
 
 
     constructor(public readonly repositoryManager: RepositoryManager) { 

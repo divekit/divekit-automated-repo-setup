@@ -8,7 +8,7 @@ import { EncodingRetriever } from "../../content_manager/EncodingRetriever";
 
 export class FileSystemRepositoryManager implements RepositoryManager {
 
-    private readonly testFolder = path.join(__dirname, '..', '..', '..', '..', 'test_folder');
+    private readonly testFolder = path.join(__dirname, '..', '..', '..', '..', 'test');
     private readonly inputFolder = path.join(this.testFolder, 'input');
     private readonly outputFolder = path.join(this.testFolder, 'output');
     private readonly codeRepoFolder = path.join(this.outputFolder, 'code');
