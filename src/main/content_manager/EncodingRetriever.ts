@@ -1,18 +1,36 @@
+import { RepositoryFile } from "./RepositoryFile";
+
 export class EncodingRetriever {
 
-    private static readonly STANDARD_TEXT_ENCODING = "utf8";
+    private static readonly standardTextEncoding = "utf8";
+    private static readonly standardBlobEncoding = "base64";
+    
+    private static readonly blobFileEndings = [ "jpg", "jpeg", "png" ];
+    
 
-    public static determineFileEncoding(filePath: string): string {
-        if (filePath.endsWith(".jpg") 
-            || filePath.endsWith(".jpeg")
-            || filePath.endsWith(".png")) {
-            return "base64";
-        } else {
-            return this.STANDARD_TEXT_ENCODING;
-        }
+    public static determineFileEncoding(filePath: string, textEncoding?: string, blobEncoding?: string): string {
+        textEncoding = textEncoding ? textEncoding : this.standardTextEncoding;
+        blobEncoding = blobEncoding ? blobEncoding : this.standardBlobEncoding;
+
+        return this.isBlob(filePath) ? blobEncoding : textEncoding;
     }
 
-    public static isTextFile(filePath: string): boolean {
-        return this.determineFileEncoding(filePath) === this.STANDARD_TEXT_ENCODING;
+    public static replaceFileEncoding(repositoryFiles: RepositoryFile[], textEncoding?: string, blobEncoding?: string): RepositoryFile[] {
+        for (let repositoryFile of repositoryFiles) {
+            if (repositoryFile.encoding) {
+                repositoryFile.encoding = this.determineFileEncoding(repositoryFile.path, textEncoding, blobEncoding);
+            }
+        }
+        return repositoryFiles;
+    }
+
+    public static isBlob(filePath: string): boolean {
+        for (let blobFileEnding of this.blobFileEndings) {
+            if (filePath.endsWith("." + blobFileEnding)) {
+                return true; 
+            }
+        }
+
+        return false;
     }
 }

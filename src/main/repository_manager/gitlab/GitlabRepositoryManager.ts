@@ -28,12 +28,12 @@ export class GitlabRepositoryManager implements RepositoryManager { // TODO crea
 
         for (var treeFile of tree) {
             if (treeFile.type === "blob") { // process only files not directories
-                if (EncodingRetriever.isTextFile(treeFile.path)) {
-                    let fileContent: any = await gitlab.RepositoryFiles.showRaw(this.repositoryConfig.remote.originRepositoryId, treeFile.path, "master");
-                    repositoryFiles.push({path: treeFile.path, content: fileContent});
-                } else {
+                if (EncodingRetriever.isBlob(treeFile.path)) {
                     let file = await gitlab.RepositoryFiles.show(this.repositoryConfig.remote.originRepositoryId, treeFile.path, "master");
                     repositoryFiles.push({path: treeFile.path, content: file.content, encoding: file.encoding});
+                } else {
+                    let fileContent: any = await gitlab.RepositoryFiles.showRaw(this.repositoryConfig.remote.originRepositoryId, treeFile.path, "master");
+                    repositoryFiles.push({path: treeFile.path, content: fileContent});
                 }
             }
         }
@@ -143,6 +143,8 @@ export class GitlabRepositoryManager implements RepositoryManager { // TODO crea
     }
 
     private convertFileArrayToCommits(repositoryFiles: RepositoryFile[]): any[] {
+        repositoryFiles = EncodingRetriever.replaceFileEncoding(repositoryFiles, "text");
+
         let commitActions: any[] = [];
         for (var file of repositoryFiles) {
             commitActions.push({ action: 'create', filePath: file.path, content: file.content, encoding: file.encoding });

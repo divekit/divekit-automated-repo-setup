@@ -3,7 +3,7 @@ import { RepositoryFile } from "../../content_manager/RepositoryFile";
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigManager } from "../../config/ConfigManager";
-import { EncodingRetriever } from "../../content_manager/EncodingRetriever";
+import { RepositoryFileLoader } from "../RepositoryFileLoader";
 
 
 export class FileSystemRepositoryManager implements RepositoryManager {
@@ -49,32 +49,8 @@ export class FileSystemRepositoryManager implements RepositoryManager {
                 originFolder = path.join(this.inputFolder, directoryNames[0]);
             }
             
-            resolve(this.getRepositoryFiles(originFolder, originFolder));
+            resolve(RepositoryFileLoader.loadRepositoryFiles(originFolder, originFolder));
         });
-    }
-
-    private getRepositoryFiles(originFolder: string, folderPath : string): RepositoryFile[] {
-        let repositoryFiles: RepositoryFile[] = [];
-        let directoryNames = fs.readdirSync(folderPath);
-    
-        for (let directoryName of directoryNames) {
-            let fullDirectoryPath = path.join(folderPath, directoryName);
-            if (fs.lstatSync(fullDirectoryPath).isDirectory()) {
-                repositoryFiles = repositoryFiles.concat(this.getRepositoryFiles(originFolder, fullDirectoryPath));
-            } else {
-                repositoryFiles.push(this.getRepositoryFile(originFolder, fullDirectoryPath));
-            }
-        }
-
-        return repositoryFiles;
-    }
-
-    private getRepositoryFile(originFolder: string, filePath : string): RepositoryFile {
-        let relativeFilePath = path.relative(originFolder, filePath);
-        let fileEncoding = EncodingRetriever.determineFileEncoding(filePath);
-        let fileContent = fs.readFileSync(filePath, { encoding: fileEncoding });
-
-        return { path: relativeFilePath, content: fileContent, encoding: fileEncoding };
     }
 
     async createCodeRepository(repositoryName: string): Promise<void> {
