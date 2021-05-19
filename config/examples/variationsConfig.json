@@ -1,0 +1,132 @@
+{
+    "objects": [
+        {
+            "ids": "Vehicle",
+            "objectVariations": [
+                {
+                    "id": "RaceCar",
+                    "Attr": {
+                        "Power": {
+                            "": "horsePower",
+                            "Type": "Integer",
+                            "Value": 203
+                        },
+                        "Built": {
+                            "": "yearBuilt",
+                            "Type": "Integer",
+                            "Value": 2017
+                        }
+                    }
+                }
+            ],
+            "variableExtensions": [ "Basic", "Plural", "Getter", "Setter", "Repository", "Rest", "Attributes" ]
+        },
+        {
+            "ids": "TuningPart",
+            "objectVariations": [
+                {
+                    "id": "Turbo"                           
+                }
+            ],
+            "variableExtensions": [ "Basic", "Plural", "Getter", "Setter", "Repository", "Rest", "Attributes" ]
+        },
+        {
+            "ids": "Registration",
+            "objectVariations": [
+                {
+                    "id": "RacePermission"
+                }
+            ],
+            "variableExtensions": [ "Basic", "Plural", "Getter", "Setter", "Repository", "Rest", "Attributes" ]
+        },
+        {
+            "ids": "Person",
+            "objectVariations": [
+                {
+                    "id": "Sponsor"
+                }
+            ],
+            "variableExtensions": [ "Basic", "Plural", "Getter", "Setter", "Repository", "Rest", "Attributes" ]
+        },
+        {
+            "ids": "Deal",
+            "objectVariations": [
+                {
+                    "id": "RentalAgreement"
+                }
+            ],
+            "variableExtensions": [ "Basic", "Plural", "Getter", "Setter", "Repository", "Rest", "Attributes" ]
+        }
+    ],
+    "relations": [
+        {
+            "relationShips": [
+                {
+                    "id": "Rel1",
+                    "relationType": "OneToMany"
+                }
+            ],
+            "relationObjects": [
+                {
+                    "id": "RelVehicleTuningPart",
+                    "obj1": "Vehicle",
+                    "obj2": "TuningPart"
+                }
+            ]
+        }, 
+        {
+            "relationShips": [
+                {
+                    "id": "Rel2",
+                    "relationType": "OneToMany"
+                }
+            ],
+            "relationObjects": [
+                {
+                    "id": "RelVehicleRegistration",
+                    "obj1": "Vehicle",
+                    "obj2": "Registration"
+                }
+            ]
+        }, 
+        {
+            "relationShips": [
+                {
+                    "id": "Rel3",
+                    "relationType": "ManyToOne"
+                },
+                {
+                    "id": "Rel4",
+                    "relationType": "ManyToMany"
+                }
+            ],
+            "relationObjects": [
+                {
+                    "id": "RelPersonVehicle",
+                    "obj1": "Person",
+                    "obj2": "Vehicle"
+                },
+                {
+                    "id": "RelDealVehicle",
+                    "obj1": "Deal",
+                    "obj2": "Vehicle"
+                }                
+            ]
+        }
+    ],
+    "logic": [
+        {
+            "id": "VehicleLogic",
+            "logicVariations": [
+                {
+                    "id": "VehicleCrash",
+                    "Description": "Keep in mind that this text is just an example. \nThis is a new line" 
+                },
+                {
+                    "id": "VehicleShop",
+                    "Description": "The Vehicle Shop exercise was selected" 
+                }
+            ]
+        }
+    ]
+}

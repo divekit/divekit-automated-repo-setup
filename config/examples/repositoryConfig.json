@@ -1,0 +1,31 @@
+{
+    "general": {
+        "localMode": true,
+        "createTestRepository": true,
+        "variateRepositories": true,
+        "maxConcurrentWorkers": 1,
+        "repositoryName": "st2-praktikum",
+        "repositoryCount": 0,
+        "repositoryMembers": [
+            ["st2-praktikum"]
+        ]
+    },
+    "local": {
+        "originRepositoryFilePath": ""
+    },
+    "remote": {
+        "originRepositoryId": 1012,
+        "codeRepositoryTargetGroupId": 161,
+        "testRepositoryTargetGroupId": 170,
+        "addUsersAsQuests": false
+    },
+    "overview": {
+        "generateOverview": true,
+        "overviewRepositoryId": 1018,
+        "overviewFileName": "spring-nachholpraktikum"
+    },
+    "individualRepositoryPersist": {
+        "useSavedIndividualRepositories": false,
+        "savedIndividualRepositoriesFileName": "ms-spring.json"
+    }
+}

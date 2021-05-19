@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+.env
+build/
+.idea
+
+overview_folder/
+test_folder/
+tmp_folder/
+individual_repositories_folder/
+
+config/relationsConfig.json
+config/repositoryConfig.json
+config/variableExtensionsConfig.json
+config/variationsConfig.json
+config/originRepositoryConfig.json

@@ -1,0 +1,30 @@
+[
+    {
+        "id": "OneToOne",
+        "Umlet": "lt=-\nm1=1\nm2=1",
+        "UmletRev": "lt=-\nm1=1\nm2=1",
+        "Short": "1 - 1",
+        "Description": "one to one"
+    }, 
+    {
+        "id": "OneToMany",
+        "Umlet": "lt=-\nm1=1\nm2=*",
+        "UmletRev": "lt=-\nm1=*\nm2=1",
+        "Short": "1 - n",
+        "Description": "one to many"
+    },
+    {
+        "id": "ManyToOne",
+        "Umlet": "lt=-\nm1=*\nm2=1",
+        "UmletRev": "lt=-\nm1=1\nm2=*",
+        "Short": "n - 1",
+        "Description": "many to one"
+    },
+    {
+        "id": "ManyToMany",
+        "Umlet": "lt=-\nm1=*\nm2=*",
+        "UmletRev": "lt=-\nm1=*\nm2=*",
+        "Short": "n - m",
+        "Description": "many to many"
+    }
+]

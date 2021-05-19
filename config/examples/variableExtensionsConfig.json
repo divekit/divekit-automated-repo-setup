@@ -1,0 +1,147 @@
+[
+    {
+        "id": "Basic",
+        "variableExtensions": 
+        {
+            "": {
+                "preValue": "",
+                "value": "id",
+                "postValue": "",
+                "modifier": "NONE"
+            },
+            "Class":
+            {
+                "preValue": "",
+                "value": "id",
+                "postValue": "",
+                "modifier": "NONE"
+            },
+            "Package":
+            {
+                "preValue": "",
+                "value": "Class",
+                "postValue": "",
+                "modifier": "ALL_LOWER_CASE"
+            },
+            "ClassPath":
+            {
+                "preValue": "thkoeln.st.st2praktikum.racing.",
+                "value": "Class",
+                "postValue": ".domain",
+                "modifier": "ALL_LOWER_CASE"
+            }
+        }
+    },
+    {
+        "id": "Plural",
+        "variableExtensions": 
+        {
+            "s": 
+            {
+                "preValue": "",
+                "value": "Class",
+                "postValue": "s",
+                "modifier": "NONE"
+            }
+        }  
+    },
+    {
+        "id": "Getter",
+        "variableExtensions": 
+        {
+            "GetToOne": 
+            {
+                "preValue": "get",
+                "value": "Class",
+                "postValue": "",
+                "modifier": "NONE"
+            }, 
+            "GetToMany": 
+            {
+                "preValue": "get",
+                "value": "s",
+                "postValue": "",
+                "modifier": "NONE"
+            }
+        }   
+    }, 
+    {
+        "id": "Setter",
+        "variableExtensions": 
+        {
+            "SetToOne": 
+            {
+                "preValue": "set",
+                "value": "Class",
+                "postValue": "",
+                "modifier": "NONE"
+            }, 
+            "SetToMany": 
+            {
+                "preValue": "set",
+                "value": "s",
+                "postValue": "",
+                "modifier": "NONE"
+            }
+        }
+    },
+    {
+        "id": "Repository",
+        "variableExtensions": 
+        {
+            "RepoClass": 
+            {
+                "preValue": "",
+                "value": "Class",
+                "postValue": "Repository",
+                "modifier": "NONE"
+            }, 
+            "RepoAttrName":
+            {
+                "preValue": "",
+                "value": "Class",
+                "postValue": "Repository",
+                "modifier": "FIRST_LOWER_CASE"
+            }
+        }
+    },
+    {
+        "id": "Rest",
+        "variableExtensions": 
+        {
+            "RestPath": 
+            {
+                "preValue": "/",
+                "value": "s",
+                "postValue": "",
+                "modifier": "FIRST_LOWER_CASE"
+            },
+            "DtoClass": {
+                "preValue": "",
+                "value": "Class",
+                "postValue": "Dto",
+                "modifier": "NONE"
+            }
+        }
+    },
+    {
+        "id": "Attributes",
+        "variableExtensions": 
+        {
+            "AttrS": 
+            {
+                "preValue": "",
+                "value": "Class",
+                "postValue": "",
+                "modifier": "FIRST_LOWER_CASE"
+            },
+            "AttrP": 
+            {
+                "preValue": "",
+                "value": "s",
+                "postValue": "",
+                "modifier": "FIRST_LOWER_CASE"
+            }
+        }
+    }
+]

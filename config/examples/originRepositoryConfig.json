@@ -1,0 +1,23 @@
+{
+    "solutionDeletion": {
+        "deleteSolution": true,
+        "deleteFileKey": "//deleteFile",
+        "deleteParagraphKey": "//delete",
+        "replaceKey": "//replace",
+        "replaceValue": "throw new UnsupportedOperationException();"
+    },
+    "warnings": {
+        "variableValueWarnings": {
+            "activate": true,
+            "typeWhiteList": [
+                "json",
+                "java",
+                "md"
+            ],
+            "ignoreList": [
+                "name",
+                "type"
+            ]
+        }
+    }
+}
