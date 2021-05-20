@@ -10,7 +10,7 @@ import * as path from 'path';
 
 export class UmletFileManipulator implements FileManipulator {
 
-    private readonly tmpUmletFolder = path.join(__dirname, '..', '..', '..', "tmp", "umlet");
+    private readonly tmpUmletFolder = path.join(__dirname, '..', '..', '..', 'resources', "tmp", "umlet");
 
     shouldManipulateRepositoryFile(repositoryFile: RepositoryFile): Boolean {
         return repositoryFile.path.endsWith(".uxf");

@@ -12,7 +12,7 @@ import { VariablePreProcessor } from "../content_variation/variable_preprocessor
 
 export class ConfigManager {
 
-    private readonly configFolder = path.join(__dirname, '..', '..', '..', 'config');
+    private readonly configFolder = path.join(__dirname, '..', '..', '..', 'resources', 'config');
 
     private configs: Configs;
 

@@ -9,7 +9,7 @@ import { ConfigManager } from '../config/ConfigManager';
 
 export class IndividualRepositoryManager {
 
-    private readonly individualRepositoriesFolder = path.join(__dirname, '..', '..', '..', 'individual_repositories');
+    private readonly individualRepositoriesFolder = path.join(__dirname, '..', '..', '..', 'resources', 'individual_repositories');
 
     private repositoryConfig = ConfigManager.getInstance().getRepositoryConfig();
     private variationGenerator: VariationGenerator;

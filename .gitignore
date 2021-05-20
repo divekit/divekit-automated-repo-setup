@@ -4,13 +4,13 @@ node_modules/
 build/
 .idea
 
-overview/
-test/
-tmp/
-individual_repositories/
+resources/overview/
+resources/test/
+resources/tmp/
+resources/individual_repositories/
 
-config/relationsConfig.json
-config/repositoryConfig.json
-config/variableExtensionsConfig.json
-config/variationsConfig.json
-config/originRepositoryConfig.json
+resources/config/relationsConfig.json
+resources/config/repositoryConfig.json
+resources/config/variableExtensionsConfig.json
+resources/config/variationsConfig.json
+resources/config/originRepositoryConfig.json
