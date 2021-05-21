@@ -5,6 +5,7 @@ import { VariableExtensionManager } from './extensions/VariableExtensionManager'
 import { NestedObjectVariationRecord } from '../config_records/object/NestedObjectVariationRecord';
 import { VariableExtensionCollectionRecord } from '../config_records/extension/VariableExtensionCollectionRecord';
 import { VariationGenerator } from '../VariationGenerator';
+import { ObjectCloner } from '../../utils/ObjectCloner';
 
 
 export class VariablePreProcessor {
@@ -19,14 +20,15 @@ export class VariablePreProcessor {
     }
 
 
-    processVariationsConfig(variationsConfig: VariationsConfig) {
-        console.log("Preprocess variables");
-
+    public processVariationsConfig(variationsConfig: VariationsConfig): VariationsConfig {
+        variationsConfig = ObjectCloner.deepCopy(variationsConfig);
         let objectRecords = variationsConfig["objects"];
 
         for (var objectRecord of objectRecords) {
             this.processObjectRecord(objectRecord);
         }
+
+        return variationsConfig;
     }
 
     private processObjectRecord(objectRecord: ObjectRecord) {

@@ -10,5 +10,4 @@ export interface Configs {
     relationsConfig: RelationsConfig;
     variableExtensionsConfig: VariableExtensionsConfig;
     variationsConfig: VariationsConfig;
-    preProcessedVariationsConfig: VariationsConfig | undefined;
 }

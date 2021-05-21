@@ -3,6 +3,7 @@ import { RepositoryFile } from "../content_manager/RepositoryFile";
 import { NestedObjectVariationRecord } from "./config_records/object/NestedObjectVariationRecord";
 import { VariationsConfig } from "./config_records/VariationsConfig";
 import { IndividualVariation } from "./IndividualVariation";
+import { VariablePreProcessor } from "./variable_processor/VariablePreProcessor";
 
 
 export class VariableFaultDetector {
@@ -18,12 +19,41 @@ export class VariableFaultDetector {
         this.identifyBlackListedVariableValues(individualVariation);
     }
 
+    public identifyBlackListedVariableValues(individualVariation: IndividualVariation) {
+        let allVariableValues = this.getAllVariableValues();
+        let allIndividualVariableValues = this.getAllVariableValuesFromIndividualVariation(individualVariation);
+        
+        this.blackListedVariableValues = [];
+        for (let variableValue of allVariableValues) {
+            if (!this.variableValueListContainsItem(allIndividualVariableValues, variableValue) 
+                && !this.variableValueContainsList(this.originRepositoryConfig.warnings.variableValueWarnings.ignoreList, variableValue)) {
+                this.blackListedVariableValues.push(variableValue);
+            }
+        }
+    }
+    
+    private getAllVariableValuesFromIndividualVariation(individualVariation: IndividualVariation): string[] {
+        let allIndividualVariableValues: string[] = []; 
+
+        for (let variableSetKey in individualVariation) {
+            let variableSet = individualVariation[variableSetKey];
+            for (let variableKey in variableSet) {
+                let variableValue = variableSet[variableKey];
+                allIndividualVariableValues.push(variableValue);
+            }
+        }
+
+        return allIndividualVariableValues;
+    }
+
     private getAllVariableValues(): string[] {
-        let variationsConfig = ConfigManager.getInstance().getPreProcessedVariationsConfig();
+        let variablePreProcessor = new VariablePreProcessor(ConfigManager.getInstance().getVariableExtensionsConfig());
+        let preProcessedVariationsConfig = variablePreProcessor.processVariationsConfig(ConfigManager.getInstance().getVariationsConfig()); 
+
         let allVariableValues: string[] = []; 
 
-        allVariableValues = allVariableValues.concat(this.getAllVariableValuesFromObjectRecords(variationsConfig));
-        allVariableValues = allVariableValues.concat(this.getAllVariableValuesFromLogicRecords(variationsConfig));
+        allVariableValues = allVariableValues.concat(this.getAllVariableValuesFromObjectRecords(preProcessedVariationsConfig));
+        allVariableValues = allVariableValues.concat(this.getAllVariableValuesFromLogicRecords(preProcessedVariationsConfig));
 
         return allVariableValues;
     }
@@ -72,33 +102,6 @@ export class VariableFaultDetector {
         }
 
         return allLogicVariableValues;
-    }
-
-    private getAllVariableValuesFromIndividualVariation(individualVariation: IndividualVariation): string[] {
-        let allIndividualVariableValues: string[] = []; 
-
-        for (let variableSetKey in individualVariation) {
-            let variableSet = individualVariation[variableSetKey];
-            for (let variableKey in variableSet) {
-                let variableValue = variableSet[variableKey];
-                allIndividualVariableValues.push(variableValue);
-            }
-        }
-
-        return allIndividualVariableValues;
-    }
-
-    public identifyBlackListedVariableValues(individualVariation: IndividualVariation) {
-        let allVariableValues = this.getAllVariableValues();
-        let allIndividualVariableValues = this.getAllVariableValuesFromIndividualVariation(individualVariation);
-        
-        this.blackListedVariableValues = [];
-        for (let variableValue of allVariableValues) {
-            if (!this.variableValueListContainsItem(allIndividualVariableValues, variableValue) 
-                && !this.variableValueContainsList(this.originRepositoryConfig.warnings.variableValueWarnings.ignoreList, variableValue)) {
-                this.blackListedVariableValues.push(variableValue);
-            }
-        }
     }
 
     private variableValueListContainsItem(variableValues: string[], checkVariableValue: string): boolean {

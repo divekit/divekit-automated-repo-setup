@@ -6,20 +6,24 @@ import { IndividualSelectionCollection } from './selections/IndividualSelectionC
 import { VariationsConfig } from './config_records/VariationsConfig';
 import { IndividualVariation } from './IndividualVariation';
 import { ConfigManager } from '../config/ConfigManager';
+import { VariablePreProcessor } from './variable_processor/VariablePreProcessor';
 
 
 export class VariationGenerator {
 
     public static readonly DIVIDE_CHAR = "_";
 
-    private variationsConfig: VariationsConfig = ConfigManager.getInstance().getPreProcessedVariationsConfig();
+    private variationsConfig: VariationsConfig;
 
-    private objectVariableGenerator: ObjectVariableGenerator;
+    private objectVariableGenerator: ObjectVariableGenerator; // TODO better abstraction of variable generators
     private relationVariableGenerator: RelationVariableGenerator;
     private logicVariableGenerator: LogicVariableGenerator;
 
 
     constructor() {
+        let variablePreProcessor = new VariablePreProcessor(ConfigManager.getInstance().getVariableExtensionsConfig());
+        this.variationsConfig = variablePreProcessor.processVariationsConfig(ConfigManager.getInstance().getVariationsConfig()); 
+
         this.objectVariableGenerator = new ObjectVariableGenerator(VariationGenerator.DIVIDE_CHAR);
         this.relationVariableGenerator = new RelationVariableGenerator(VariationGenerator.DIVIDE_CHAR);
         this.logicVariableGenerator = new LogicVariableGenerator(VariationGenerator.DIVIDE_CHAR);

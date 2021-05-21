@@ -1,5 +1,4 @@
 import { RelationsConfig } from "../content_variation/config_records/RelationsConfig"
-import { VariableExtensionManager } from "../content_variation/variable_preprocessor/extensions/VariableExtensionManager"
 import { VariationsConfig } from "../content_variation/config_records/VariationsConfig"
 import { Configs } from "./Configs";
 import * as fs from 'fs';
@@ -8,7 +7,7 @@ import { RepositoryFile } from "../content_manager/RepositoryFile";
 import { RepositoryConfig } from "./config_records/repository_config/RepositoryConfig";
 import { OriginRepositoryConfig } from "./config_records/origin_repository_config/OriginRepositoryConfig";
 import { VariableExtensionsConfig } from "../content_variation/config_records/VariableExtensionsConfig";
-import { VariablePreProcessor } from "../content_variation/variable_preprocessor/VariablePreProcessor";
+
 
 export class ConfigManager {
 
@@ -32,7 +31,6 @@ export class ConfigManager {
             relationsConfig: this.loadConfigFromLocalFiles("relationsConfig"), 
             variableExtensionsConfig: this.loadConfigFromLocalFiles("variableExtensionsConfig"), 
             variationsConfig: this.loadConfigFromLocalFiles("variationsConfig"),
-            preProcessedVariationsConfig: undefined
         };
     }
 
@@ -54,8 +52,6 @@ export class ConfigManager {
 
         let newVariationsConfig = this.loadConfigFromOriginRepoFiles(originRepositoryFiles, "variationsConfig");
         this.configs.variationsConfig = newVariationsConfig ? newVariationsConfig : this.configs.variationsConfig;
-
-        this.configs.preProcessedVariationsConfig = undefined;
     }
 
     private loadConfigFromOriginRepoFiles(originRepositoryFiles: RepositoryFile[], configName: string): any | undefined {
@@ -86,16 +82,6 @@ export class ConfigManager {
 
     public getVariationsConfig(): VariationsConfig {
         return this.configs.variationsConfig;
-    }
-
-    public getPreProcessedVariationsConfig(): VariationsConfig {
-        if (!this.configs.preProcessedVariationsConfig) {
-            let variablePreProcessor = new VariablePreProcessor(this.configs.variableExtensionsConfig);
-            this.configs.preProcessedVariationsConfig = this.configs.variationsConfig; // TODO create copy
-            variablePreProcessor.processVariationsConfig(this.configs.preProcessedVariationsConfig); 
-        }
-
-        return this.configs.preProcessedVariationsConfig;
     }
 
     public getRepositoryConfig(): RepositoryConfig {
