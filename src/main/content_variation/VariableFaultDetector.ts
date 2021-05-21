@@ -3,7 +3,7 @@ import { RepositoryFile } from "../content_manager/RepositoryFile";
 import { NestedObjectVariationRecord } from "./config_records/object/NestedObjectVariationRecord";
 import { VariationsConfig } from "./config_records/VariationsConfig";
 import { IndividualVariation } from "./IndividualVariation";
-import { VariablePreProcessor } from "./variable_processor/VariablePreProcessor";
+import { VariablePreProcessor } from "./variable_processor/pre_processor/VariablePreProcessor";
 
 
 export class VariableFaultDetector {
@@ -31,7 +31,7 @@ export class VariableFaultDetector {
             }
         }
     }
-    
+
     private getAllVariableValuesFromIndividualVariation(individualVariation: IndividualVariation): string[] {
         let allIndividualVariableValues: string[] = []; 
 

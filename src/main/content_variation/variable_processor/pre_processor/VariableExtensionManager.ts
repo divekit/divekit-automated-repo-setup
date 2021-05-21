@@ -1,12 +1,19 @@
-import { AllLowerCaseModifier } from './modifier/AllLowerCaseModifier';
+import { AllLowerCaseModifier } from '../modifier/AllLowerCaseModifier';
 import { VariableExtensionsConfig } from "../../config_records/VariableExtensionsConfig";
 import { VariableExtensionCollectionRecord } from "../../config_records/extension/VariableExtensionCollectionRecord";
 import { NestedObjectVariationRecord } from "../../config_records/object/NestedObjectVariationRecord";
-import { FirstLowerCaseModifier } from './modifier/FirstLowerCaseModifier';
-import { Modifier } from './modifier/Modifier';
+import { FirstLowerCaseModifier } from '../modifier/FirstLowerCaseModifier';
+import { Modifier } from '../modifier/Modifier';
 
 
 export class VariableExtensionManager {
+
+    private readonly noModifierId = "NONE";
+    private readonly availableModifiers = [
+        new AllLowerCaseModifier(),
+        new FirstLowerCaseModifier()
+    ];
+
 
     public constructor (private variableExtensionGroups: VariableExtensionsConfig) { }
 
@@ -21,7 +28,7 @@ export class VariableExtensionManager {
                         if (referencedVariableValue) {
                             let modifier = this.getModifierById(variableValueParameters["modifier"]);
                             if (modifier != null) {
-                                referencedVariableValue = modifier.applyModifierToValue(referencedVariableValue);
+                                referencedVariableValue = modifier.applyToValue(referencedVariableValue);
                             }
                             let variableValue = 
                                 variableValueParameters["preValue"] +
@@ -67,12 +74,14 @@ export class VariableExtensionManager {
     }
 
     private getModifierById(id: string): Modifier | null {
-        if (id === "FIRST_LOWER_CASE") {
-            return new FirstLowerCaseModifier();
-        } else if (id === "ALL_LOWER_CASE") {
-            return new AllLowerCaseModifier();
-        } else if (id === "NONE") {
+        if (id === this.noModifierId) {
             return null;
+        }
+
+        for (let modifier of this.availableModifiers) {
+            if (modifier.getId() === id) {
+                return modifier;
+            }
         }
 
         throw Error(`Error: Referenced Modifier ${id} not found`);

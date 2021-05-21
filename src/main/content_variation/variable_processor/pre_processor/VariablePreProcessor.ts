@@ -1,16 +1,13 @@
-import { VariationsConfig } from '../config_records/VariationsConfig';
-import { ObjectRecord } from '../config_records/object/ObjectRecord';
-import { VariableExtensionsConfig } from "../config_records/VariableExtensionsConfig";
-import { VariableExtensionManager } from './extensions/VariableExtensionManager';
-import { NestedObjectVariationRecord } from '../config_records/object/NestedObjectVariationRecord';
-import { VariableExtensionCollectionRecord } from '../config_records/extension/VariableExtensionCollectionRecord';
-import { VariationGenerator } from '../VariationGenerator';
-import { ObjectCloner } from '../../utils/ObjectCloner';
+import { VariationsConfig } from '../../config_records/VariationsConfig';
+import { ObjectRecord } from '../../config_records/object/ObjectRecord';
+import { VariableExtensionsConfig } from "../../config_records/VariableExtensionsConfig";
+import { VariableExtensionManager } from './VariableExtensionManager';
+import { NestedObjectVariationRecord } from '../../config_records/object/NestedObjectVariationRecord';
+import { VariableExtensionCollectionRecord } from '../../config_records/extension/VariableExtensionCollectionRecord';
+import { ObjectCloner } from '../../../utils/ObjectCloner';
 
 
 export class VariablePreProcessor {
-
-    private readonly DIVIDE_CHAR = VariationGenerator.DIVIDE_CHAR;
 
     private variableExtensionManager: VariableExtensionManager;
 

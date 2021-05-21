@@ -6,11 +6,13 @@ import { IndividualSelectionCollection } from './selections/IndividualSelectionC
 import { VariationsConfig } from './config_records/VariationsConfig';
 import { IndividualVariation } from './IndividualVariation';
 import { ConfigManager } from '../config/ConfigManager';
-import { VariablePreProcessor } from './variable_processor/VariablePreProcessor';
+import { VariablePreProcessor } from './variable_processor/pre_processor/VariablePreProcessor';
+import { VariablePostProcessor } from './variable_processor/post_processor/VariablePostProcessor';
 
 
 export class VariationGenerator {
 
+    public static readonly META_DATA_GROUP_ID = "General";
     public static readonly DIVIDE_CHAR = "_";
 
     private variationsConfig: VariationsConfig;
@@ -18,6 +20,8 @@ export class VariationGenerator {
     private objectVariableGenerator: ObjectVariableGenerator; // TODO better abstraction of variable generators
     private relationVariableGenerator: RelationVariableGenerator;
     private logicVariableGenerator: LogicVariableGenerator;
+
+    private variablePostProcessor: VariablePostProcessor;
 
 
     constructor() {
@@ -27,6 +31,8 @@ export class VariationGenerator {
         this.objectVariableGenerator = new ObjectVariableGenerator(VariationGenerator.DIVIDE_CHAR);
         this.relationVariableGenerator = new RelationVariableGenerator(VariationGenerator.DIVIDE_CHAR);
         this.logicVariableGenerator = new LogicVariableGenerator(VariationGenerator.DIVIDE_CHAR);
+
+        this.variablePostProcessor = new VariablePostProcessor([VariationGenerator.META_DATA_GROUP_ID]);
     } 
 
     public getEmptyIndividualSelectionCollection(): IndividualSelectionCollection {
@@ -64,13 +70,15 @@ export class VariationGenerator {
                 this.variationsConfig.logic, 
                 individualVariation,
                 individualSelectionCollection.individualLogicSelection);
+
+            individualVariation = this.variablePostProcessor.processIndividualVariation(individualVariation);
         }
 
         return individualVariation;
     }  
     
     private generateIndividualRepositoryMetaDataVariables(repositoryMetaData: RepositoryMetaData, individualVariation: IndividualVariation): IndividualVariation {
-        let preIdentifier = "General";
+        let preIdentifier = VariationGenerator.META_DATA_GROUP_ID;
         individualVariation[preIdentifier] = {};
 
         for (let [key, value] of Object.entries(repositoryMetaData)) {
