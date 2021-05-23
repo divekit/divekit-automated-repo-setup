@@ -1,5 +1,8 @@
 import { ConfigManager } from "../config/ConfigManager";
 import { RepositoryFile } from "../content_manager/RepositoryFile";
+import { Logger } from "../logging/Logger";
+import { LogLevel } from "../logging/LogLevel";
+import { IndividualRepository } from "../repository_creation/IndividualRepository";
 import { NestedObjectVariationRecord } from "./config_records/object/NestedObjectVariationRecord";
 import { VariationsConfig } from "./config_records/VariationsConfig";
 import { IndividualVariation } from "./IndividualVariation";
@@ -15,8 +18,8 @@ export class VariableFaultDetector {
     private blackListedVariableValues: string[] = [];
 
 
-    constructor(individualVariation: IndividualVariation) {
-        this.identifyBlackListedVariableValues(individualVariation);
+    constructor(private individualRepository: IndividualRepository) {
+        this.identifyBlackListedVariableValues(individualRepository.individualVariation!);
     }
 
     public identifyBlackListedVariableValues(individualVariation: IndividualVariation) {
@@ -141,12 +144,12 @@ export class VariableFaultDetector {
     public detectFaults(repositoryFile: RepositoryFile) {
         if (!this.ignoreFile(repositoryFile)) {
             if (repositoryFile.path.includes("$") || repositoryFile.content.includes("$")) {
-                console.log(`Warning: There are remaining "$" in the file: ${repositoryFile.path}`);
+                Logger.getInstance().log(`There are remaining "$" in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
             }
 
             for (let blackListedVariableValue of this.blackListedVariableValues) {
                 if (repositoryFile.path.includes(blackListedVariableValue) || repositoryFile.content.includes(blackListedVariableValue)) {
-                    console.log(`Warning: The variable value "${blackListedVariableValue}" should not be contained in the file: ${repositoryFile.path}`);
+                    Logger.getInstance().log(`The variable value "${blackListedVariableValue}" should not be contained in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
                 }
             }
         }

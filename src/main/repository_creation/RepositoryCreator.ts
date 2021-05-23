@@ -1,35 +1,37 @@
 import { RepositoryFile } from "../content_manager/RepositoryFile";
 import { ContentRetriever } from "../content_manager/ContentRetriever";
-import { GitlabRepositoryManager } from "../repository_manager/gitlab/GitlabRepositoryManager";
+import { GitlabRepositoryAdapter } from "../repository_adapter/gitlab/GitlabRepositoryAdapter";
 import { ContentProvider } from "../content_manager/ContentProvider";
-import { RepositoryManager } from "../repository_manager/RepositoryManager";
-import { FileSystemRepositoryManager } from "../repository_manager/file_system/FileSystemRepositoryManager";
+import { RepositoryAdapter } from "../repository_adapter/RepositoryAdapter";
+import { FileSystemRepositoryAdapter } from "../repository_adapter/file_system/FileSystemRepositoryAdapter";
 import { OverviewGenerator } from '../generate_overview/OverviewGenerator';
 import { IndividualRepository } from './IndividualRepository';
 import { IndividualRepositoryManager } from './IndividualRepositoryManager';
 import { ConfigManager } from "../config/ConfigManager";
 import { Task, TaskQueue } from "./TaskQueue";
+import { Logger } from "../logging/Logger";
+import { LogLevel } from "../logging/LogLevel";
 
 
 export class RepositoryCreator {
     
-    public async generateRepositories(): Promise<void> {        
+    public async generateRepositories(): Promise<void> {  
         let originRepositoryFiles: RepositoryFile[] = await this.retrieveOriginRepositoryFiles();
         let individualRepositoryManager: IndividualRepositoryManager = new IndividualRepositoryManager();
         let individualRepositories: IndividualRepository[] = individualRepositoryManager.getIndividualRepositories();   
 
-        this.generateRepositoryManager().prepareEnvironment();
+        this.generateRepositoryAdapter().prepareEnvironment();
 
         let contentProviders = await this.startRepositoryGenerationTasks(originRepositoryFiles, individualRepositories);
 
         if (ConfigManager.getInstance().getRepositoryConfig().overview.generateOverview) {
-            let overviewGenerator = new OverviewGenerator(this.generateRepositoryManager());
+            let overviewGenerator = new OverviewGenerator(this.generateRepositoryAdapter());
             overviewGenerator.generateOverviewPage(contentProviders);
         }
     }
 
     private async startRepositoryGenerationTasks(originRepositoryFiles: RepositoryFile[], individualRepositories: IndividualRepository[]): Promise<ContentProvider[]> {
-        console.log("Start generating repositories")
+        Logger.getInstance().log("Start generating repositories");
         let startTime = new Date().getTime();
 
         let contentProviderTasks: Task<ContentProvider | Error>[] = [];
@@ -53,7 +55,7 @@ export class RepositoryCreator {
         }
 
         let finishedTime = new Date().getTime();
-        console.log(`Finished generating repositories (Took ${ ((finishedTime - startTime) / 1000 / 60).toFixed(2) } minutes)`);
+        Logger.getInstance().log(`Finished generating repositories (Took ${ ((finishedTime - startTime) / 1000 / 60).toFixed(2) } minutes)`);
         return contentProviders;
     }
 
@@ -62,40 +64,40 @@ export class RepositoryCreator {
         const testRepositoryName = `${ConfigManager.getInstance().getRepositoryConfig().general.repositoryName}_tests_group_${individualRepository.id}`;
 
         try { 
-            let repositoryManager = this.generateRepositoryManager();
-            let contentProvider = new ContentProvider(repositoryManager, individualRepository);
+            let repositoryAdapter = this.generateRepositoryAdapter(individualRepository);
+            let contentProvider = new ContentProvider(repositoryAdapter, individualRepository);
             await contentProvider.provideRepositoriesWithContent(originRepositoryFiles, codeRepositoryName, testRepositoryName); 
-            console.log(`Finished generating repository with id ${individualRepository.id}`);
+            Logger.getInstance().log(`Finished generating repository`, LogLevel.Info, individualRepository.id!);
             return contentProvider;
         } catch (error) {
-            let errorMsg = `An error occurred while generating repository with id ${individualRepository.id}`;
+            let errorMsg = `An error occurred while generating repository`;
             if (individualRepository.members) {
                 errorMsg = errorMsg + " (Members: " + individualRepository.getMembersList() + ")";
             }
-            console.log(errorMsg);
-            console.log(error);
+            Logger.getInstance().log(errorMsg, LogLevel.Error, individualRepository.id!);
+            Logger.getInstance().log(error, LogLevel.Error, individualRepository.id!);
             throw error;
         }
     }
 
     private async retrieveOriginRepositoryFiles(): Promise<RepositoryFile[]> {
-        try { 
-            let contentRetriever = new ContentRetriever(this.generateRepositoryManager());
+        try {
+            let contentRetriever = new ContentRetriever(this.generateRepositoryAdapter());
             let originRepositoryFiles = await contentRetriever.retrieveOriginFiles();
             ConfigManager.getInstance().loadConfigsFromOriginRepoFiles(originRepositoryFiles);
             originRepositoryFiles = contentRetriever.filterOriginFiles(originRepositoryFiles);
             return originRepositoryFiles;
         } catch (error) {
-            console.log("Error: Could not retrieve origin project");
+            Logger.getInstance().log("Could not retrieve origin project", LogLevel.Error);
             throw error;
-        }  
+        }
     }
 
-    private generateRepositoryManager(): RepositoryManager {
+    private generateRepositoryAdapter(individualRepository?: IndividualRepository): RepositoryAdapter {
         if (ConfigManager.getInstance().getRepositoryConfig().general.localMode) {
-            return new FileSystemRepositoryManager();
+            return new FileSystemRepositoryAdapter();
         } else {
-            return new GitlabRepositoryManager();
+            return new GitlabRepositoryAdapter(individualRepository);
         }
     }
 }

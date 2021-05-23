@@ -1,10 +1,12 @@
 import path from "path";
 import * as fs from 'fs';
 
-import { RepositoryManager } from "../repository_manager/RepositoryManager";
+import { RepositoryAdapter } from "../repository_adapter/RepositoryAdapter";
 import { TimeStampCreator } from '../utils/TimeStampCreator';
 import { ConfigManager } from "../config/ConfigManager";
 import { ContentProvider } from "../content_manager/ContentProvider";
+import { Logger } from "../logging/Logger";
+import { LogLevel } from "../logging/LogLevel";
 
 
 export class OverviewGenerator {
@@ -12,7 +14,7 @@ export class OverviewGenerator {
     private readonly overviewFolder = path.join(__dirname, '..', '..', '..', 'resources', 'overview');
 
 
-    constructor(public readonly repositoryManager: RepositoryManager) { 
+    constructor(public readonly repositoryAdapter: RepositoryAdapter) { 
         fs.mkdirSync(this.overviewFolder, { recursive: true });
     }
 
@@ -27,10 +29,10 @@ export class OverviewGenerator {
         fs.writeFileSync(path.join(this.overviewFolder, filePath), content);
 
         try {
-            await this.repositoryManager.addOverviewToOverviewRepository({ path: filePath, content: content, encoding: "text" });
+            await this.repositoryAdapter.addOverviewToOverviewRepository({ path: filePath, content: content, encoding: "text" });
         } catch (error) {
-            console.log("An error occurred while saving the overview. Keep in mind that a backup overview file was placed in the overview folder");
-            console.log(error);
+            Logger.getInstance().log("An error occurred while saving the overview. Keep in mind that a backup overview file was placed in the overview folder", LogLevel.Error);
+            Logger.getInstance().log(error, LogLevel.Error);
         }
     }
 
@@ -72,14 +74,14 @@ export class OverviewGenerator {
     }
 
     private getCodeRepoLink(contentProvider: ContentProvider): String {
-        return contentProvider.repositoryManager.getLinkToCodeRepository();
+        return contentProvider.repositoryAdapter.getLinkToCodeRepository();
     }
 
     private getTestRepoLink(contentProvider: ContentProvider): String {
-        return contentProvider.repositoryManager.getLinkToTestRepository();
+        return contentProvider.repositoryAdapter.getLinkToTestRepository();
     }
 
     private getTestPageLink(contentProvider: ContentProvider): String {
-        return contentProvider.repositoryManager.getLinkToTestPage();
+        return contentProvider.repositoryAdapter.getLinkToTestPage();
     }    
 }

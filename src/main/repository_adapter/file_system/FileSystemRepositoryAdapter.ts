@@ -1,12 +1,14 @@
-import { RepositoryManager } from "../RepositoryManager";
 import { RepositoryFile } from "../../content_manager/RepositoryFile";
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConfigManager } from "../../config/ConfigManager";
 import { RepositoryFileLoader } from "../RepositoryFileLoader";
+import { RepositoryAdapter } from "../RepositoryAdapter";
+import { Logger } from "../../logging/Logger";
+import { LogLevel } from "../../logging/LogLevel";
 
 
-export class FileSystemRepositoryManager implements RepositoryManager {
+export class FileSystemRepositoryAdapter implements RepositoryAdapter {
 
     private readonly testFolder = path.join(__dirname, '..', '..', '..', '..', 'resources', 'test');
     private readonly inputFolder = path.join(this.testFolder, 'input');
@@ -42,7 +44,7 @@ export class FileSystemRepositoryManager implements RepositoryManager {
             if (originFolder.length == 0) {
                 let directoryNames = fs.readdirSync(this.inputFolder);
                 if (directoryNames.length == 0) {
-                    console.log(`There was no origin repository found in folder: ${this.inputFolder}`);
+                    Logger.getInstance().log(`There was no origin repository found in folder: ${this.inputFolder}`, LogLevel.Error);
                     reject();
                 }
         
@@ -68,7 +70,7 @@ export class FileSystemRepositoryManager implements RepositoryManager {
     }
 
     async addOverviewToOverviewRepository(overviewContent: RepositoryFile): Promise<void> {
-        return; // no student members on file system possible
+        return; // no overview repository on file system
     }
 
     async linkCodeAndTestRepository(): Promise<void> {

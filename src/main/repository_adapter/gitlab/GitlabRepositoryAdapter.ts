@@ -1,11 +1,15 @@
-import { RepositoryManager } from "../RepositoryManager";
-import { RepositoryFile } from "../../content_manager/RepositoryFile";
 import dotenv from "dotenv";
+
+import { RepositoryAdapter } from "../RepositoryAdapter";
+import { RepositoryFile } from "../../content_manager/RepositoryFile";
 import { CommitSchema, Gitlab, UserSchema } from "gitlab";
 import { ConfigManager } from "../../config/ConfigManager";
 import { AccessLevel, ResourceVariableSchema } from "gitlab/dist/types/core/templates";
 import { EncodingRetriever } from "../../content_manager/EncodingRetriever";
 import { GitlabProject } from "./GitlabProject";
+import { IndividualRepository } from "../../repository_creation/IndividualRepository";
+import { Logger } from "../../logging/Logger";
+import { LogLevel } from "../../logging/LogLevel";
 
 dotenv.config();
 const gitlab = new Gitlab({
@@ -14,13 +18,17 @@ const gitlab = new Gitlab({
 });
 
 
-export class GitlabRepositoryManager implements RepositoryManager { // TODO create POJOs for any types
+export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO create POJOs for any types
 
     private codeRepository: GitlabProject | null = null;
     private testRepository: GitlabProject | null = null;
 
     private repositoryConfig = ConfigManager.getInstance().getRepositoryConfig();
 
+
+    constructor(private individualRepository?: IndividualRepository) {
+
+    }
 
     public async retrieveOriginFiles(): Promise<RepositoryFile[]> {
         let tree: any = await gitlab.Repositories.tree(this.repositoryConfig.remote.originRepositoryId, { recursive: true, per_page: Number.MAX_SAFE_INTEGER });
@@ -60,13 +68,13 @@ export class GitlabRepositoryManager implements RepositoryManager { // TODO crea
                 if (user) {
                     try {
                         await gitlab.ProjectMembers.add(this.codeRepository!.id, user.id, this.getAccessLevel());
-                        console.log(`Added User ${user.username} to project`);
+                        Logger.getInstance().log(`Added User ${user.username} to project`, LogLevel.Info, this.individualRepository!.id!, true);
                     } catch (error) {
-                        console.log(`Warning: Could not add user ${members[i]}`);
-                        console.log(error);
+                        Logger.getInstance().log(`Could not add user ${members[i]}`, LogLevel.Warning, this.individualRepository!.id!, true);
+                        Logger.getInstance().log(error, LogLevel.Warning, this.individualRepository!.id!, true);
                     }
                 } else {
-                    console.log(`Warning: Could not find user ${members[i]} by name`);
+                    Logger.getInstance().log(`Could not find user ${members[i]} by name`, LogLevel.Warning, this.individualRepository!.id!, true);
                 }
             }
         }

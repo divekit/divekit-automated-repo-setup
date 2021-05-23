@@ -2,10 +2,10 @@ import path from "path";
 import * as fs from 'fs';
 
 import { RepositoryFile } from "./RepositoryFile";
-import { RepositoryManager } from "../repository_manager/RepositoryManager";
+import { RepositoryAdapter } from "../repository_adapter/RepositoryAdapter";
 import { SolutionDeleter } from "../solution_deletion/SolutionDeleter";
 import { ConfigManager } from "../config/ConfigManager";
-import { RepositoryFileLoader } from "../repository_manager/RepositoryFileLoader";
+import { RepositoryFileLoader } from "../repository_adapter/RepositoryFileLoader";
 
 
 export class ContentRetriever {
@@ -17,7 +17,7 @@ export class ContentRetriever {
     private solutionDeleter: SolutionDeleter;
 
 
-    constructor(public readonly repositoryManager: RepositoryManager) { 
+    constructor(public readonly repositoryAdapter: RepositoryAdapter) { 
         this.solutionDeleter = new SolutionDeleter();
 
         fs.mkdirSync(this.additionalFilesWithTestRepositoryFolder, { recursive: true });
@@ -25,7 +25,7 @@ export class ContentRetriever {
     }
 
     public async retrieveOriginFiles() : Promise<RepositoryFile[]> {
-        let originFiles = await this.repositoryManager.retrieveOriginFiles();
+        let originFiles = await this.repositoryAdapter.retrieveOriginFiles();
 
         if (ConfigManager.getInstance().getRepositoryConfig().general.createTestRepository) {
             originFiles = originFiles.concat(RepositoryFileLoader.loadRepositoryFiles(this.additionalFilesWithTestRepositoryFolder, 

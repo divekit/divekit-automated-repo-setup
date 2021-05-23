@@ -1,10 +1,12 @@
-import { RepositoryManager } from "../repository_manager/RepositoryManager";
+import { RepositoryAdapter } from "../repository_adapter/RepositoryAdapter";
 import { RepositoryFile } from "./RepositoryFile";
 import { ContentReplacer } from '../content_variation/ContentReplacer';
 import { FileManipulatorManager } from '../file_manipulator/FileManipulatorManager';
 import { IndividualRepository } from '../repository_creation/IndividualRepository';
 import { IndividualSelectionCollection } from '../content_variation/selections/IndividualSelectionCollection';
 import { ConfigManager } from "../config/ConfigManager";
+import { Logger } from "../logging/Logger";
+import { LogLevel } from "../logging/LogLevel";
 
 
 export class ContentProvider {
@@ -18,7 +20,7 @@ export class ContentProvider {
     private fileManipulatorManager: FileManipulatorManager;
 
 
-    constructor(public readonly repositoryManager: RepositoryManager, public readonly individualRepository: IndividualRepository) {
+    constructor(public readonly repositoryAdapter: RepositoryAdapter, public readonly individualRepository: IndividualRepository) {
         this.fileManipulatorManager = new FileManipulatorManager();    
     }
     
@@ -48,9 +50,9 @@ export class ContentProvider {
         codeRepositoryFiles = this.filterIndividualRepositoryFiles(codeRepositoryFiles); // TODO better solution instead of 2 times filtering
         testRepositoryFiles = this.filterIndividualRepositoryFiles(testRepositoryFiles);
 
-        await this.repositoryManager.provideContentToCodeRepository(codeRepositoryFiles);
+        await this.repositoryAdapter.provideContentToCodeRepository(codeRepositoryFiles);
         if (ConfigManager.getInstance().getRepositoryConfig().general.createTestRepository) {
-            await this.repositoryManager.provideContentToTestRepository(testRepositoryFiles);
+            await this.repositoryAdapter.provideContentToTestRepository(testRepositoryFiles);
         }
     }
 
@@ -94,7 +96,7 @@ export class ContentProvider {
         
         let contentReplacer: ContentReplacer | undefined = undefined;
         if (this.individualRepository.individualVariation) {
-            contentReplacer = new ContentReplacer(this.individualRepository.individualVariation);
+            contentReplacer = new ContentReplacer(this.individualRepository);
         }
 
         for (var originRepositoryFile of originRepositoryFiles) {
@@ -112,12 +114,12 @@ export class ContentProvider {
     }
 
     private async prepareRepositoryManager(codeRepositoryName: string, testRepositoryName: string) {
-        await this.repositoryManager.createCodeRepository(codeRepositoryName);
-        await this.repositoryManager.addMembersToCodeRepository(this.individualRepository.members);
+        await this.repositoryAdapter.createCodeRepository(codeRepositoryName);
+        await this.repositoryAdapter.addMembersToCodeRepository(this.individualRepository.members);
 
         if (ConfigManager.getInstance().getRepositoryConfig().general.createTestRepository) {
-            await this.repositoryManager.createTestRepository(testRepositoryName);
-            await this.repositoryManager.linkCodeAndTestRepository();
+            await this.repositoryAdapter.createTestRepository(testRepositoryName);
+            await this.repositoryAdapter.linkCodeAndTestRepository();
         }
     }
 }

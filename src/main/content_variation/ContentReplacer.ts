@@ -1,5 +1,6 @@
 import { ConfigManager } from "../config/ConfigManager";
 import { RepositoryFile } from "../content_manager/RepositoryFile";
+import { IndividualRepository } from "../repository_creation/IndividualRepository";
 import { IndividualVariation } from "./IndividualVariation";
 import { VariableFaultDetector } from "./VariableFaultDetector";
 
@@ -11,9 +12,9 @@ export class ContentReplacer {
     private variableFaultDetector: VariableFaultDetector | undefined = undefined;
 
 
-    constructor(private individualVariation: IndividualVariation) {
+    constructor(private individualRepository: IndividualRepository) {
         if (this.originRepositoryConfig.warnings.variableValueWarnings.activate) {
-            this.variableFaultDetector = new VariableFaultDetector(individualVariation);
+            this.variableFaultDetector = new VariableFaultDetector(individualRepository);
         }
     }
 
@@ -29,10 +30,12 @@ export class ContentReplacer {
     }
 
     private replaceContent(oldContent: string) {
+        let individualVariation = this.individualRepository.individualVariation!;
+
         var newContent = oldContent;
-        for (var preIdentifier in this.individualVariation) {
-            for (var key in this.individualVariation[preIdentifier]) {
-                newContent = newContent.replace(new RegExp(`\\$${key}\\$`, "gm"), this.individualVariation[preIdentifier][key]);
+        for (var preIdentifier in individualVariation) {
+            for (var key in individualVariation[preIdentifier]) {
+                newContent = newContent.replace(new RegExp(`\\$${key}\\$`, "gm"), individualVariation[preIdentifier][key]);
             }
         }
         return newContent;

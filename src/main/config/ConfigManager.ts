@@ -7,6 +7,8 @@ import { RepositoryFile } from "../content_manager/RepositoryFile";
 import { RepositoryConfig } from "./config_records/repository_config/RepositoryConfig";
 import { OriginRepositoryConfig } from "./config_records/origin_repository_config/OriginRepositoryConfig";
 import { VariableExtensionsConfig } from "../content_variation/config_records/VariableExtensionsConfig";
+import { Logger } from "../logging/Logger";
+import { LogLevel } from "../logging/LogLevel";
 
 
 export class ConfigManager {
@@ -67,7 +69,7 @@ export class ConfigManager {
         try {
             return JSON.parse(configContent);
         } catch (error) {
-            console.log("Error: Could not parse " + configName);
+            Logger.getInstance().log("Could not parse " + configName, LogLevel.Error);
             throw error;
         }
     }
