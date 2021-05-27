@@ -193,7 +193,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     }
 
     private getAccessLevel(): AccessLevel {
-        if (this.repositoryConfig.remote.addUsersAsQuests) {
+        if (this.repositoryConfig.remote.addUsersAsGuests) {
             return 10;
         } else {
             return 40;

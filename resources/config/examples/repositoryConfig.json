@@ -17,7 +17,7 @@
         "originRepositoryId": 1012,
         "codeRepositoryTargetGroupId": 161,
         "testRepositoryTargetGroupId": 170,
-        "addUsersAsQuests": false
+        "addUsersAsGuests": false
     },
     "overview": {
         "generateOverview": true,
