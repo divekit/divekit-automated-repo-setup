@@ -20,7 +20,9 @@ export class RepositoryCreator {
         let individualRepositoryManager: IndividualRepositoryManager = new IndividualRepositoryManager();
         let individualRepositories: IndividualRepository[] = individualRepositoryManager.getIndividualRepositories();   
 
-        this.generateRepositoryAdapter().prepareEnvironment();
+        Logger.getInstance().log("Start preparing environment");
+        await this.generateRepositoryAdapter().prepareEnvironment();
+        Logger.getInstance().log("Finished preparing environment");
 
         let contentProviders = await this.startRepositoryGenerationTasks(originRepositoryFiles, individualRepositories);
 

@@ -25,6 +25,7 @@
         "originRepositoryId": 1012,
         "codeRepositoryTargetGroupId": 161,
         "testRepositoryTargetGroupId": 170,
+        "deleteExistingRepositories": false,
         "addUsersAsGuests": false
     },
     "overview": {

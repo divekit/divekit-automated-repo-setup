@@ -208,5 +208,20 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         return this.testRepository!.web_url;
     }
 
-    public prepareEnvironment() { }
+    public async prepareEnvironment() { 
+        if (this.repositoryConfig.remote.deleteExistingRepositories) {
+            await this.deleteProjectsInGroup(this.repositoryConfig.remote.codeRepositoryTargetGroupId);
+
+            if (this.repositoryConfig.general.createTestRepository) {
+                await this.deleteProjectsInGroup(this.repositoryConfig.remote.testRepositoryTargetGroupId);
+            }
+        }
+    }
+
+    private async deleteProjectsInGroup(groupId: number) {
+        let projects = await gitlab.GroupProjects.all(groupId);
+        for (let project of projects) {
+            await gitlab.Projects.remove(project.id);
+        }
+    }
 }

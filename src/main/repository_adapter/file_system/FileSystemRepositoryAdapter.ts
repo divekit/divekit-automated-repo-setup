@@ -26,8 +26,8 @@ export class FileSystemRepositoryAdapter implements RepositoryAdapter {
         this.initializeTestFolder();
     }
 
-    public prepareEnvironment() {
-        fs.rmdirSync(this.outputFolder, { recursive: true });
+    public async prepareEnvironment() {
+        await fs.promises.rmdir(this.outputFolder, { recursive: true });
     }
 
     private initializeTestFolder() {

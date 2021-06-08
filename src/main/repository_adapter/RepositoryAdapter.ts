@@ -1,7 +1,7 @@
 import { RepositoryFile } from "../content_manager/RepositoryFile";
 
 export interface RepositoryAdapter {
-    prepareEnvironment(): void;
+    prepareEnvironment(): Promise<void>;
     retrieveOriginFiles(): Promise<RepositoryFile[]>;
     createCodeRepository(repositoryName: string): Promise<void>;
     createTestRepository(repositoryName: string): Promise<void>;
