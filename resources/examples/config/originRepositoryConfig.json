@@ -2,8 +2,10 @@
     "solutionDeletion": {
         "deleteFileKey": "//deleteFile",
         "deleteParagraphKey": "//delete",
-        "replaceKey": "//replace",
-        "replaceValue": "throw new UnsupportedOperationException();"
+        "replaceMap": {
+            "//unsup": "throw new UnsupportedOperationException();",
+            "//todo": "// TODO"
+        }
     },
     "warnings": {
         "variableValueWarnings": {

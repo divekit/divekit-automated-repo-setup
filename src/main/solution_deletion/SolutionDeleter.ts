@@ -12,7 +12,7 @@ export class SolutionDeleter {
     
     constructor() { };
 
-    deleteSolution(fileContent: string) : SolutionDeleteResult {
+    public deleteSolution(fileContent: string) : SolutionDeleteResult {
         let result : SolutionDeleteResult = { deleteFile: false, newFileContent: "" };
         
         if (this.shouldFileBeDeleted(fileContent)) {
@@ -25,13 +25,18 @@ export class SolutionDeleter {
         return result;
     }
 
-    shouldFileBeDeleted(fileContent: string) {
+    private shouldFileBeDeleted(fileContent: string) {
         return fileContent.includes(this.originRepositoryConfig.solutionDeletion.deleteFileKey);
     }
 
-    changeFileContent(fileContent: string) {
-        var newFileContent = fileContent.replace(new RegExp(`${this.originRepositoryConfig.solutionDeletion.deleteParagraphKey}[\\s\\S]*?${this.originRepositoryConfig.solutionDeletion.deleteParagraphKey}`, "gm"), "");
-        newFileContent = newFileContent.replace(new RegExp(`${this.originRepositoryConfig.solutionDeletion.replaceKey}[\\s\\S]*?${this.originRepositoryConfig.solutionDeletion.replaceKey}`, "gm"), this.originRepositoryConfig.solutionDeletion.replaceValue);
+    private changeFileContent(fileContent: string) {
+        let deleteKey = this.originRepositoryConfig.solutionDeletion.deleteParagraphKey;
+        let newFileContent = fileContent.replace(new RegExp(`${deleteKey}[\\s\\S]*?${deleteKey}`, "gm"), "");
+        
+        for (let replaceKey in this.originRepositoryConfig.solutionDeletion.replaceMap) {
+            let replaceValue = this.originRepositoryConfig.solutionDeletion.replaceMap[replaceKey];
+            newFileContent = newFileContent.replace(new RegExp(`${replaceKey}[\\s\\S]*?${replaceKey}`, "gm"), replaceValue);
+        }
         return newFileContent;
     }
 }
