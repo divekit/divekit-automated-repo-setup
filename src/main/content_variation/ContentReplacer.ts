@@ -7,13 +7,11 @@ import { VariableFaultDetector } from "./VariableFaultDetector";
 
 export class ContentReplacer {
 
-    private originRepositoryConfig = ConfigManager.getInstance().getOriginRepositoryConfig();
-
     private variableFaultDetector: VariableFaultDetector | undefined = undefined;
 
 
     constructor(private individualRepository: IndividualRepository) {
-        if (this.originRepositoryConfig.warnings.variableValueWarnings.activate) {
+        if (ConfigManager.getInstance().getRepositoryConfig().general.activateVariableValueWarnings) {
             this.variableFaultDetector = new VariableFaultDetector(individualRepository);
         }
     }

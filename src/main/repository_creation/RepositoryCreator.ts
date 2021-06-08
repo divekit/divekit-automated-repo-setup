@@ -60,8 +60,8 @@ export class RepositoryCreator {
     }
 
     private async createRepository(originRepositoryFiles: RepositoryFile[], individualRepository: IndividualRepository): Promise<ContentProvider> {
-        const codeRepositoryName = `${ConfigManager.getInstance().getRepositoryConfig().general.repositoryName}_group_${individualRepository.id}`;
-        const testRepositoryName = `${ConfigManager.getInstance().getRepositoryConfig().general.repositoryName}_tests_group_${individualRepository.id}`;
+        const codeRepositoryName = `${ConfigManager.getInstance().getRepositoryConfig().repository.repositoryName}_group_${individualRepository.id}`;
+        const testRepositoryName = `${ConfigManager.getInstance().getRepositoryConfig().repository.repositoryName}_tests_group_${individualRepository.id}`;
 
         try { 
             let repositoryAdapter = this.generateRepositoryAdapter(individualRepository);

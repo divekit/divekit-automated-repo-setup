@@ -43,7 +43,7 @@ export class ContentRetriever {
         
         for (var repositoryFile of repositoryFiles) {
             
-            if (ConfigManager.getInstance().getOriginRepositoryConfig().solutionDeletion.deleteSolution) {
+            if (ConfigManager.getInstance().getRepositoryConfig().general.deleteSolution) {
                 let solutionDeleterResult = this.solutionDeleter.deleteSolution(repositoryFile.content);
                 if (!solutionDeleterResult.deleteFile) {
                     repositoryFile.content = solutionDeleterResult.newFileContent;

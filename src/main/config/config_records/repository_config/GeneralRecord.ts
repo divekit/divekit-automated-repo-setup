@@ -3,8 +3,7 @@ export interface GeneralRecord {
     localMode: boolean,
     createTestRepository: boolean,
     variateRepositories: boolean,
-    maxConcurrentWorkers: number,
-    repositoryName: string
-    repositoryCount: number
-    repositoryMembers: string[][]
+    deleteSolution: boolean,
+    activateVariableValueWarnings: boolean,
+    maxConcurrentWorkers: number
 }

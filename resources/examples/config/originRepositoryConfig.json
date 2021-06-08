@@ -1,6 +1,5 @@
 {
     "solutionDeletion": {
-        "deleteSolution": true,
         "deleteFileKey": "//deleteFile",
         "deleteParagraphKey": "//delete",
         "replaceKey": "//replace",
@@ -8,7 +7,6 @@
     },
     "warnings": {
         "variableValueWarnings": {
-            "activate": true,
             "typeWhiteList": [
                 "json",
                 "java",
