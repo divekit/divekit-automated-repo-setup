@@ -1,4 +1,7 @@
 {
+    "variables": {
+        "variableDelimeter": "$"
+    },
     "solutionDeletion": {
         "deleteFileKey": "//deleteFile",
         "deleteParagraphKey": "//delete",

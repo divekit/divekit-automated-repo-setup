@@ -13,6 +13,8 @@ export class VariableFaultDetector {
 
     private readonly ignoreFilesContains = [ "norepo" ];
 
+    private readonly variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimeter;
+
     private originRepositoryConfig = ConfigManager.getInstance().getOriginRepositoryConfig();
         
     private blackListedVariableValues: string[] = [];
@@ -143,8 +145,8 @@ export class VariableFaultDetector {
 
     public detectFaults(repositoryFile: RepositoryFile) {
         if (!this.ignoreFile(repositoryFile)) {
-            if (repositoryFile.path.includes("$") || repositoryFile.content.includes("$")) {
-                Logger.getInstance().log(`There are remaining "$" in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
+            if (this.variableDelimeter.length > 0 && (repositoryFile.path.includes(this.variableDelimeter) || repositoryFile.content.includes(this.variableDelimeter))) {
+                Logger.getInstance().log(`There are remaining "${this.variableDelimeter}" in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
             }
 
             for (let blackListedVariableValue of this.blackListedVariableValues) {
