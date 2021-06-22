@@ -14,12 +14,8 @@ export class ContentRetriever {
     private readonly additionalFilesWithTestRepositoryFolder = path.join(this.additionalFilesFolder, 'with_test_repository');
     private readonly additionalFilesWithoutTestRepositoryFolder = path.join(this.additionalFilesFolder, 'without_test_repository');
 
-    private solutionDeleter: SolutionDeleter;
-
 
     constructor(public readonly repositoryAdapter: RepositoryAdapter) { 
-        this.solutionDeleter = new SolutionDeleter();
-
         fs.mkdirSync(this.additionalFilesWithTestRepositoryFolder, { recursive: true });
         fs.mkdirSync(this.additionalFilesWithoutTestRepositoryFolder, { recursive: true });
     }
@@ -40,11 +36,12 @@ export class ContentRetriever {
 
     public filterOriginFiles(repositoryFiles: RepositoryFile[]) : RepositoryFile[] {
         let filteredRepositoryFiles : RepositoryFile[] = [];
+        let solutionDeleter = new SolutionDeleter();
         
         for (var repositoryFile of repositoryFiles) {
             
             if (ConfigManager.getInstance().getRepositoryConfig().general.deleteSolution) {
-                let solutionDeleterResult = this.solutionDeleter.deleteSolution(repositoryFile.content);
+                let solutionDeleterResult = solutionDeleter.deleteSolution(repositoryFile.content);
                 if (!solutionDeleterResult.deleteFile) {
                     repositoryFile.content = solutionDeleterResult.newFileContent;
                     filteredRepositoryFiles.push(repositoryFile);

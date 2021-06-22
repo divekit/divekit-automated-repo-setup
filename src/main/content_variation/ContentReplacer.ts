@@ -11,7 +11,8 @@ export class ContentReplacer {
 
 
     constructor(private individualRepository: IndividualRepository) {
-        if (ConfigManager.getInstance().getRepositoryConfig().general.activateVariableValueWarnings) {
+        if (ConfigManager.getInstance().getRepositoryConfig().general.variateRepositories
+            && ConfigManager.getInstance().getRepositoryConfig().general.activateVariableValueWarnings) {
             this.variableFaultDetector = new VariableFaultDetector(individualRepository);
         }
     }

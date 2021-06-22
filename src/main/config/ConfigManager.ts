@@ -36,10 +36,14 @@ export class ConfigManager {
         };
     }
 
-    private loadConfigFromLocalFiles(configName: string): any {
-        let configPath = path.join(this.configFolder, configName);
-        let configJson = fs.readFileSync(configPath + ".json").toString();
-        return this.parseConfig(configJson, configName);
+    private loadConfigFromLocalFiles(configName: string): any | undefined {
+        let configPath = path.join(this.configFolder, configName) + ".json";
+        if (fs.existsSync(configPath)) {
+            let configJson = fs.readFileSync(configPath).toString();
+            return this.parseConfig(configJson, configName);
+        } else {
+            return undefined;
+        }
     }
 
     public loadConfigsFromOriginRepoFiles(originRepositoryFiles: RepositoryFile[]) {
@@ -74,23 +78,39 @@ export class ConfigManager {
         }
     }
 
-    public getRelationsConfig(): RelationsConfig {
-        return this.configs.relationsConfig;
-    }
-
-    public getVariableExtensionsConfig(): VariableExtensionsConfig {
-        return this.configs.variableExtensionsConfig;
-    }
-
-    public getVariationsConfig(): VariationsConfig {
-        return this.configs.variationsConfig;
-    }
-
     public getRepositoryConfig(): RepositoryConfig {
         return this.configs.repositoryConfig;
     }
+    
+    public getRelationsConfig(): RelationsConfig {
+        if (this.configs.relationsConfig) {
+            return this.configs.relationsConfig;
+        } else {
+            throw Error("Could not find relationsConfig");
+        }
+    }
+
+    public getVariableExtensionsConfig(): VariableExtensionsConfig {
+        if (this.configs.variableExtensionsConfig) {
+            return this.configs.variableExtensionsConfig;
+        } else {
+            throw Error("Could not find variableExtensionsConfig");
+        }
+    }
+
+    public getVariationsConfig(): VariationsConfig {
+        if (this.configs.variationsConfig) {
+            return this.configs.variationsConfig;
+        } else {
+            throw Error("Could not find variationsConfig");
+        }
+    }
 
     public getOriginRepositoryConfig(): OriginRepositoryConfig {
-        return this.configs.originRepositoryConfig;
+        if (this.configs.originRepositoryConfig) {
+            return this.configs.originRepositoryConfig;
+        } else {
+            throw Error("Could not find originRepositoryConfig");
+        }
     }
 }

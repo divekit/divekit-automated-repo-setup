@@ -6,8 +6,8 @@ import { VariableExtensionsConfig } from "../content_variation/config_records/Va
 
 export interface Configs {
     repositoryConfig: RepositoryConfig;
-    originRepositoryConfig: OriginRepositoryConfig;
-    relationsConfig: RelationsConfig;
-    variableExtensionsConfig: VariableExtensionsConfig;
-    variationsConfig: VariationsConfig;
+    originRepositoryConfig?: OriginRepositoryConfig;
+    relationsConfig?: RelationsConfig;
+    variableExtensionsConfig?: VariableExtensionsConfig;
+    variationsConfig?: VariationsConfig;
 }
