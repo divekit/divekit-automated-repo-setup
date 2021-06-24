@@ -81,7 +81,7 @@ export class IndividualRepositoryManager {
 
     private updateIndividualVariations(individualRepositories: IndividualRepository[]) {
         for (let individualRepository of individualRepositories) {
-            individualRepository.individualVariation = this.variationGenerator.generateIndividualVariation({ Id: individualRepository.id! }, individualRepository.individualSelectionCollection!);
+            individualRepository.individualVariation = this.variationGenerator.generateIndividualVariation({ RepositoryId: individualRepository.id! }, individualRepository.individualSelectionCollection!);
             Logger.getInstance().log("Generated variables for repository", LogLevel.Info, individualRepository.id!);
             Logger.getInstance().log(individualRepository.individualVariation);
         }

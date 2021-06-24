@@ -1,3 +1,3 @@
 export interface RepositoryMetaData {
-    Id: string
+    RepositoryId: string
 }
