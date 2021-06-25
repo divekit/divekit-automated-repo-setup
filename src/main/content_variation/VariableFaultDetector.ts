@@ -52,8 +52,10 @@ export class VariableFaultDetector {
     }
 
     private getAllVariableValues(): string[] {
-        let variablePreProcessor = new VariablePreProcessor(ConfigManager.getInstance().getVariableExtensionsConfig());
-        let preProcessedVariationsConfig = variablePreProcessor.processVariationsConfig(ConfigManager.getInstance().getVariationsConfig()); 
+        let variablePreProcessor = new VariablePreProcessor();
+        let preProcessedVariationsConfig = variablePreProcessor.processVariationsConfig(
+            ConfigManager.getInstance().getVariableExtensionsConfig(), 
+            ConfigManager.getInstance().getVariationsConfig()); 
 
         let allVariableValues: string[] = []; 
 

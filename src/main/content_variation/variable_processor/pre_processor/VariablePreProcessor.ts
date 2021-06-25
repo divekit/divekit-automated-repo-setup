@@ -5,6 +5,7 @@ import { VariableExtensionManager } from './VariableExtensionManager';
 import { NestedObjectVariationRecord } from '../../config_records/object/NestedObjectVariationRecord';
 import { VariableExtensionCollectionRecord } from '../../config_records/extension/VariableExtensionCollectionRecord';
 import { ObjectCloner } from '../../../utils/ObjectCloner';
+import { VariableExtensionGroupRecord } from '../../config_records/extension/VariableExtensionGroupRecord';
 
 
 export class VariablePreProcessor {
@@ -12,26 +13,26 @@ export class VariablePreProcessor {
     private variableExtensionManager: VariableExtensionManager;
 
 
-    constructor (variableExtensionGroups: VariableExtensionsConfig) {
-        this.variableExtensionManager = new VariableExtensionManager(variableExtensionGroups);
+    constructor () {
+        this.variableExtensionManager = new VariableExtensionManager();
     }
 
 
-    public processVariationsConfig(variationsConfig: VariationsConfig): VariationsConfig {
+    public processVariationsConfig(variableExtensionGroups: VariableExtensionGroupRecord[], variationsConfig: VariationsConfig): VariationsConfig {
         variationsConfig = ObjectCloner.deepCopy(variationsConfig);
-        let objectRecords = variationsConfig["objects"];
+        let objectRecords = variationsConfig.objects;
 
         for (var objectRecord of objectRecords) {
-            this.processObjectRecord(objectRecord);
+            this.processObjectRecord(variableExtensionGroups, objectRecord);
         }
 
         return variationsConfig;
     }
 
-    private processObjectRecord(objectRecord: ObjectRecord) {
-        let variableExtensionCollections = this.variableExtensionManager.getVariableExtensionCollectionsByIds(objectRecord["variableExtensions"]);
+    private processObjectRecord(variableExtensionGroups: VariableExtensionGroupRecord[], objectRecord: ObjectRecord) {
+        let variableExtensionCollections = this.variableExtensionManager.getVariableExtensionCollectionsByIds(variableExtensionGroups, objectRecord.variableExtensions);
 
-        for (var objectVariation of objectRecord["objectVariations"]) {
+        for (var objectVariation of objectRecord.objectVariations) {
             this.processNestedObjectVariationRecord(objectVariation, variableExtensionCollections);
         } 
     }

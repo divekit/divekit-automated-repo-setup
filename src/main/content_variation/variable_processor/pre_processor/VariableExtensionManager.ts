@@ -1,9 +1,9 @@
 import { AllLowerCaseModifier } from '../modifier/AllLowerCaseModifier';
-import { VariableExtensionsConfig } from "../../config_records/VariableExtensionsConfig";
 import { VariableExtensionCollectionRecord } from "../../config_records/extension/VariableExtensionCollectionRecord";
 import { NestedObjectVariationRecord } from "../../config_records/object/NestedObjectVariationRecord";
 import { FirstLowerCaseModifier } from '../modifier/FirstLowerCaseModifier';
 import { Modifier } from '../modifier/Modifier';
+import { VariableExtensionGroupRecord } from '../../config_records/extension/VariableExtensionGroupRecord';
 
 
 export class VariableExtensionManager {
@@ -14,9 +14,6 @@ export class VariableExtensionManager {
         new FirstLowerCaseModifier()
     ];
 
-
-    public constructor (private variableExtensionGroups: VariableExtensionsConfig) { }
-
     
     public applyVariableExtensionsToNestedObjectVariationRecord(nestedObjectVariation: NestedObjectVariationRecord, variableExtensionCollections: VariableExtensionCollectionRecord[]) {
         for (var variableExtensionCollection of variableExtensionCollections) {
@@ -24,16 +21,16 @@ export class VariableExtensionManager {
                 if (nestedObjectVariation[variableKey] == null) {
                     let variableValueParameters = variableExtensionCollection[variableKey];
                     if (variableValueParameters != null) {
-                        let referencedVariableValue = this.getVariableValueByKey(nestedObjectVariation, variableValueParameters["value"]);
+                        let referencedVariableValue = this.getVariableValueByKey(nestedObjectVariation, variableValueParameters.value);
                         if (referencedVariableValue) {
-                            let modifier = this.getModifierById(variableValueParameters["modifier"]);
+                            let modifier = this.getModifierById(variableValueParameters.modifier);
                             if (modifier != null) {
                                 referencedVariableValue = modifier.applyToValue(referencedVariableValue);
                             }
                             let variableValue = 
-                                variableValueParameters["preValue"] +
+                                variableValueParameters.preValue +
                                 referencedVariableValue +
-                                variableValueParameters["postValue"];
+                                variableValueParameters.postValue;
                             nestedObjectVariation[variableKey] = variableValue;
                         }
                     }
@@ -42,15 +39,15 @@ export class VariableExtensionManager {
         } 
     }
 
-    public getVariableExtensionCollectionsByIds(variableExtensionGroupIds: string[]): VariableExtensionCollectionRecord[] {
+    public getVariableExtensionCollectionsByIds(variableExtensionGroups: VariableExtensionGroupRecord[], variableExtensionGroupIds: string[]): VariableExtensionCollectionRecord[] {
         let variableExtensionCollections: VariableExtensionCollectionRecord[] = [];
 
         for (var variableExtensionGroupId of variableExtensionGroupIds) {
             let foundVariableExtensionGroup = null;
-            for (var variableExtensionGroup of this.variableExtensionGroups) {
-                if (variableExtensionGroup["id"].toUpperCase() === variableExtensionGroupId.toUpperCase()) {
+            for (var variableExtensionGroup of variableExtensionGroups) {
+                if (variableExtensionGroup.id.toUpperCase() === variableExtensionGroupId.toUpperCase()) {
                     foundVariableExtensionGroup = variableExtensionGroup;
-                    variableExtensionCollections.push(foundVariableExtensionGroup["variableExtensions"]);
+                    variableExtensionCollections.push(foundVariableExtensionGroup.variableExtensions);
                     break;
                 }
             }
