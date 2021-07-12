@@ -31,7 +31,7 @@ export class VariableFaultDetector {
         this.blackListedVariableValues = [];
         for (let variableValue of allVariableValues) {
             if (!this.variableValueListContainsItem(allIndividualVariableValues, variableValue) 
-                && !this.variableValueContainsList(this.originRepositoryConfig.warnings.variableValueWarnings.ignoreList, variableValue)) {
+                && !this.variableValueListContainsItem(this.originRepositoryConfig.warnings.variableValueWarnings.ignoreList, variableValue)) {
                 this.blackListedVariableValues.push(variableValue);
             }
         }
