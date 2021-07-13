@@ -13,7 +13,7 @@ export class VariableFaultDetector {
 
     private readonly ignoreFilesContains = [ "norepo" ];
 
-    private readonly variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimeter;
+    private readonly variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
 
     private originRepositoryConfig = ConfigManager.getInstance().getOriginRepositoryConfig();
         

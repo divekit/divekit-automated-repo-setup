@@ -9,14 +9,14 @@ import { VariableFaultDetector } from "./VariableFaultDetector";
 export class ContentReplacer {
 
     private readonly tmpCharSeparator = "Z3GA";
-    private readonly variableDelimeter: string;
+    private readonly variableDelimiter: string;
 
     private variableFaultDetector: VariableFaultDetector | undefined = undefined;
     private replaceVariables: ReplaceVariable[];
 
 
     constructor(individualRepository: IndividualRepository) {
-        this.variableDelimeter = this.calculateVariableDelimeter();
+        this.variableDelimiter = this.calculateVariableDelimiter();
         this.replaceVariables = this.calculateReplaceVariables(individualRepository.individualVariation!);
 
         if (ConfigManager.getInstance().getRepositoryConfig().general.variateRepositories
@@ -40,10 +40,10 @@ export class ContentReplacer {
         var newContent = oldContent;
 
         for (let replaceVariable of this.replaceVariables) {
-            newContent = newContent.replace(new RegExp(`${this.variableDelimeter}${replaceVariable.name}${this.variableDelimeter}`, "gm"), replaceVariable.value);
+            newContent = newContent.replace(new RegExp(`${this.variableDelimiter}${replaceVariable.name}${this.variableDelimiter}`, "gm"), replaceVariable.value);
         }
 
-        if (this.variableDelimeter.length == 0) {
+        if (this.variableDelimiter.length == 0) {
             newContent = newContent.replace(new RegExp(`\\${this.tmpCharSeparator}`, "gm"), "");
         }
 
@@ -62,14 +62,14 @@ export class ContentReplacer {
             }
         }
 
-        if (this.variableDelimeter.length == 0) {
+        if (this.variableDelimiter.length == 0) {
             replaceVariables.sort((a, b) => b.name.length - a.name.length);
         }
         return replaceVariables;
     }
 
     private calculateReplaceVariableValue(value: string): string {
-        if (this.variableDelimeter.length > 0) {
+        if (this.variableDelimiter.length > 0) {
             return value;
         }
 
@@ -81,8 +81,8 @@ export class ContentReplacer {
         return newValue;
     }
 
-    private calculateVariableDelimeter(): string {
-        let variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimeter;
+    private calculateVariableDelimiter(): string {
+        let variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
         return variableDelimeter.length == 1 ? `\\${variableDelimeter}` : variableDelimeter;
     }
 }

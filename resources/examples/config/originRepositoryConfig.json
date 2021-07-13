@@ -1,6 +1,6 @@
 {
     "variables": {
-        "variableDelimeter": "$"
+        "variableDelimiter": "__"
     },
     "solutionDeletion": {
         "deleteFileKey": "//deleteFile",

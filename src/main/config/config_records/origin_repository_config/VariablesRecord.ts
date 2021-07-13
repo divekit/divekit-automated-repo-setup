@@ -1,3 +1,3 @@
 export interface VariablesRecord {
-    variableDelimeter: string
+    variableDelimiter: string
 }
