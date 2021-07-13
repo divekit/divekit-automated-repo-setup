@@ -8,7 +8,7 @@ import { VariableFaultDetector } from "./VariableFaultDetector";
 
 export class ContentReplacer {
 
-    private readonly tmpCharSeparator = "$";
+    private readonly tmpCharSeparator = "Z3GA";
     private readonly variableDelimeter: string;
 
     private variableFaultDetector: VariableFaultDetector | undefined = undefined;
