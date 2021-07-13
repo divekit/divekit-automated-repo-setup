@@ -8,7 +8,7 @@ import { VariableFaultDetector } from "./VariableFaultDetector";
 
 export class ContentReplacer {
 
-    private readonly tmpCharSeparator = "Z3GA";
+    private readonly tmpCharSeparator = "\\$\\$\\$";
     private readonly variableDelimiter: string;
 
     private variableFaultDetector: VariableFaultDetector | undefined = undefined;
@@ -44,7 +44,7 @@ export class ContentReplacer {
         }
 
         if (this.variableDelimiter.length == 0) {
-            newContent = newContent.replace(new RegExp(`\\${this.tmpCharSeparator}`, "gm"), "");
+            newContent = newContent.replace(new RegExp(`${this.tmpCharSeparator}`, "gm"), "");
         }
 
         return newContent;
