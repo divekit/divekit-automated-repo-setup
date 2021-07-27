@@ -4,6 +4,7 @@ import { IndividualRepository } from "../repository_creation/IndividualRepositor
 import { IndividualVariation } from "./IndividualVariation";
 import { ReplaceVariable } from "./ReplaceVariable";
 import { VariableFaultDetector } from "./VariableFaultDetector";
+import { VariationGenerator } from "./VariationGenerator";
 
 
 export class ContentReplacer {
@@ -62,7 +63,7 @@ export class ContentReplacer {
             }
         }
 
-        if (this.variableDelimiter.length == 0) {
+        if (this.variableDelimiter.length == 0 || this.variableDelimiter == VariationGenerator.divideChar) {
             replaceVariables.sort((a, b) => b.name.length - a.name.length);
         }
         return replaceVariables;

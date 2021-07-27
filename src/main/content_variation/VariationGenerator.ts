@@ -12,8 +12,8 @@ import { VariablePostProcessor } from './variable_processor/post_processor/Varia
 
 export class VariationGenerator {
 
-    public readonly metaDataGroupId = "General";
-    public readonly divideChar = "_";
+    public static readonly metaDataGroupId = "General";
+    public static readonly divideChar = "_";
 
     private variationsConfig?: VariationsConfig;
 
@@ -29,11 +29,11 @@ export class VariationGenerator {
     constructor() {
         this.variablePreProcessor = new VariablePreProcessor();
 
-        this.objectVariableGenerator = new ObjectVariableGenerator(this.divideChar);
-        this.relationVariableGenerator = new RelationVariableGenerator(this.divideChar);
-        this.logicVariableGenerator = new LogicVariableGenerator(this.divideChar);
+        this.objectVariableGenerator = new ObjectVariableGenerator(VariationGenerator.divideChar);
+        this.relationVariableGenerator = new RelationVariableGenerator(VariationGenerator.divideChar);
+        this.logicVariableGenerator = new LogicVariableGenerator(VariationGenerator.divideChar);
 
-        this.variablePostProcessor = new VariablePostProcessor([this.metaDataGroupId]);
+        this.variablePostProcessor = new VariablePostProcessor([VariationGenerator.metaDataGroupId]);
 
         if (ConfigManager.getInstance().getRepositoryConfig().general.variateRepositories) {
             this.variationsConfig = this.variablePreProcessor.processVariationsConfig(ConfigManager.getInstance().getVariableExtensionsConfig(), ConfigManager.getInstance().getVariationsConfig()); 
@@ -83,7 +83,7 @@ export class VariationGenerator {
     }  
     
     private generateIndividualRepositoryMetaDataVariables(repositoryMetaData: RepositoryMetaData, individualVariation: IndividualVariation): IndividualVariation {
-        let preIdentifier = this.metaDataGroupId;
+        let preIdentifier = VariationGenerator.metaDataGroupId;
         individualVariation[preIdentifier] = {};
 
         for (let [key, value] of Object.entries(repositoryMetaData)) {

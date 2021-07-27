@@ -13,7 +13,7 @@ export class VariableFaultDetector {
 
     private readonly ignoreFilesContains = [ "norepo" ];
 
-    private readonly variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
+    private readonly variableDelimiter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
 
     private originRepositoryConfig = ConfigManager.getInstance().getOriginRepositoryConfig();
         
@@ -111,9 +111,40 @@ export class VariableFaultDetector {
         return allLogicVariableValues;
     }
 
+    public detectFaults(repositoryFile: RepositoryFile) {
+        if (!this.ignoreFile(repositoryFile)) {
+            if (this.variableDelimiter.length > 0 && (this.detectRemainingDelimiter(repositoryFile.path) || this.detectRemainingDelimiter(repositoryFile.content))) {
+                Logger.getInstance().log(`There are remaining "${this.variableDelimiter}" in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
+            }
+
+            for (let blackListedVariableValue of this.blackListedVariableValues) {
+                if (repositoryFile.path.includes(blackListedVariableValue) || repositoryFile.content.includes(blackListedVariableValue)) {
+                    Logger.getInstance().log(`The variable value "${blackListedVariableValue}" should not be contained in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
+                }
+            }
+        }
+    }
+
+    private detectRemainingDelimiter(content: string): boolean {
+        let regex = new RegExp(`\\S*${this.variableDelimiter}+\\S*`, "g");
+        let resultArray = content.match(regex);
+
+        if (!resultArray) {
+            return false;
+        }
+
+        for (let result of resultArray) {
+            if (!this.variableValueContainsList(this.originRepositoryConfig.warnings.variableValueWarnings.ignoreList, result)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private variableValueListContainsItem(variableValues: string[], checkVariableValue: string): boolean {
         for (let variableValue of variableValues) {
-            if (variableValue.includes(checkVariableValue)) {
+            if (new RegExp(checkVariableValue, "i").test(variableValue)) {
                 return true;
             }
         }
@@ -122,7 +153,7 @@ export class VariableFaultDetector {
 
     private variableValueContainsList(variableValues: string[], checkVariableValue: string): boolean {
         for (let variableValue of variableValues) {
-            if (checkVariableValue.includes(variableValue)) {
+            if (new RegExp(variableValue, "i").test(checkVariableValue)) {
                 return true;
             }
         }
@@ -143,19 +174,5 @@ export class VariableFaultDetector {
         }
 
         return true;
-    }
-
-    public detectFaults(repositoryFile: RepositoryFile) {
-        if (!this.ignoreFile(repositoryFile)) {
-            if (this.variableDelimeter.length > 0 && (repositoryFile.path.includes(this.variableDelimeter) || repositoryFile.content.includes(this.variableDelimeter))) {
-                Logger.getInstance().log(`There are remaining "${this.variableDelimeter}" in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
-            }
-
-            for (let blackListedVariableValue of this.blackListedVariableValues) {
-                if (repositoryFile.path.includes(blackListedVariableValue) || repositoryFile.content.includes(blackListedVariableValue)) {
-                    Logger.getInstance().log(`The variable value "${blackListedVariableValue}" should not be contained in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
-                }
-            }
-        }
     }
 }
