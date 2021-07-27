@@ -63,7 +63,7 @@ export class ContentReplacer {
             }
         }
 
-        if (this.variableDelimiter.length == 0 || this.variableDelimiter == VariationGenerator.divideChar) {
+        if (this.variableDelimiter.length == 0 || this.variableDelimiter.replace("\\", "") == VariationGenerator.divideChar) {
             replaceVariables.sort((a, b) => b.name.length - a.name.length);
         }
         return replaceVariables;
