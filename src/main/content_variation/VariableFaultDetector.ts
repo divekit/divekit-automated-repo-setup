@@ -5,6 +5,7 @@ import { LogLevel } from "../logging/LogLevel";
 import { IndividualRepository } from "../repository_creation/IndividualRepository";
 import { NestedObjectVariationRecord } from "./config_records/object/NestedObjectVariationRecord";
 import { VariationsConfig } from "./config_records/VariationsConfig";
+import { ContentReplacer } from "./ContentReplacer";
 import { IndividualVariation } from "./IndividualVariation";
 import { VariablePreProcessor } from "./variable_processor/pre_processor/VariablePreProcessor";
 
@@ -126,7 +127,8 @@ export class VariableFaultDetector {
     }
 
     private detectRemainingDelimiter(content: string): boolean {
-        let regex = new RegExp(`\\S*${this.variableDelimiter}+\\S*`, "g");
+        let escapeVariableDelimiter = ContentReplacer.escapeVariableDelimiter(this.variableDelimiter);
+        let regex = new RegExp(`\\S*${escapeVariableDelimiter}+\\S*`, "g");
         let resultArray = content.match(regex);
 
         if (!resultArray) {
