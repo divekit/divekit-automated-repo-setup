@@ -58,7 +58,7 @@ export class ContentProvider {
 
     private filterIndividualRepositoryFiles(individualRepositoryFiles: RepositoryFile[]): RepositoryFile[] {
         let filteredIndividualRepositoryFiles: RepositoryFile[] = [];
-        let keepFileIdentifiers = this.getKeepFileIdentifier(this.individualRepository.individualSelectionCollection!);
+        let keepFileIdentifiers = this.getKeepFileIdentifiers(this.individualRepository.individualSelectionCollection!);
         
         for (var individualRepositoryFile of individualRepositoryFiles) {
             let includeFile = true;
@@ -83,7 +83,7 @@ export class ContentProvider {
         return filteredIndividualRepositoryFiles;
     } 
 
-    private getKeepFileIdentifier(individualSelectionCollection: IndividualSelectionCollection): string[] {
+    private getKeepFileIdentifiers(individualSelectionCollection: IndividualSelectionCollection): string[] {
         let keepFileIdentifiers: string[] = [];
         for (let individualSelection of Object.values(individualSelectionCollection)) {
             keepFileIdentifiers = keepFileIdentifiers.concat(Object.values(individualSelection));
