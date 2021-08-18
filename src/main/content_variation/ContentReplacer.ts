@@ -10,14 +10,13 @@ import { VariationGenerator } from "./VariationGenerator";
 export class ContentReplacer {
 
     private readonly tmpCharSeparator = "\\$\\$\\$";
-    private readonly variableDelimiter: string;
+    private readonly variableDelimiter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
 
     private variableFaultDetector: VariableFaultDetector | undefined = undefined;
     private replaceVariables: ReplaceVariable[];
 
 
     constructor(individualRepository: IndividualRepository) {
-        this.variableDelimiter = this.calculateVariableDelimiter();
         this.replaceVariables = this.calculateReplaceVariables(individualRepository.individualVariation!);
 
         if (ConfigManager.getInstance().getRepositoryConfig().general.variateRepositories
@@ -38,10 +37,11 @@ export class ContentReplacer {
     }
 
     private replaceContent(oldContent: string) {
+        let escapeVariableDelimiter = ContentReplacer.escapeVariableDelimiter(this.variableDelimiter);
         var newContent = oldContent;
 
         for (let replaceVariable of this.replaceVariables) {
-            newContent = newContent.replace(new RegExp(`${this.variableDelimiter}${replaceVariable.name}${this.variableDelimiter}`, "gm"), replaceVariable.value);
+            newContent = newContent.replace(new RegExp(`${escapeVariableDelimiter}${replaceVariable.name}${escapeVariableDelimiter}`, "gm"), replaceVariable.value);
         }
 
         if (this.variableDelimiter.length == 0) {
@@ -63,7 +63,7 @@ export class ContentReplacer {
             }
         }
 
-        if (this.variableDelimiter.length == 0 || this.variableDelimiter.replace("\\", "") == VariationGenerator.divideChar) {
+        if (this.variableDelimiter.length == 0 || this.variableDelimiter == VariationGenerator.divideChar) {
             replaceVariables.sort((a, b) => b.name.length - a.name.length);
         }
         return replaceVariables;
@@ -82,8 +82,7 @@ export class ContentReplacer {
         return newValue;
     }
 
-    private calculateVariableDelimiter(): string {
-        let variableDelimeter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
-        return variableDelimeter.length == 1 ? `\\${variableDelimeter}` : variableDelimeter;
+    public static escapeVariableDelimiter(delimiter: string): string {
+        return delimiter.length == 1 ? `\\${delimiter}` : delimiter;
     }
 }
