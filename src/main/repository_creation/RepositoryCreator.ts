@@ -1,22 +1,25 @@
-import { RepositoryFile } from "../content_manager/RepositoryFile";
-import { ContentRetriever } from "../content_manager/ContentRetriever";
-import { GitlabRepositoryAdapter } from "../repository_adapter/gitlab/GitlabRepositoryAdapter";
-import { ContentProvider } from "../content_manager/ContentProvider";
-import { RepositoryAdapter } from "../repository_adapter/RepositoryAdapter";
-import { FileSystemRepositoryAdapter } from "../repository_adapter/file_system/FileSystemRepositoryAdapter";
-import { OverviewGenerator } from '../generate_overview/OverviewGenerator';
-import { IndividualRepository } from './IndividualRepository';
-import { IndividualRepositoryManager } from './IndividualRepositoryManager';
-import { ConfigManager } from "../config/ConfigManager";
-import { Task, TaskQueue } from "./TaskQueue";
-import { Logger } from "../logging/Logger";
-import { LogLevel } from "../logging/LogLevel";
+import {RepositoryFile} from "../content_manager/RepositoryFile";
+import {ContentRetriever} from "../content_manager/ContentRetriever";
+import {GitlabRepositoryAdapter} from "../repository_adapter/gitlab/GitlabRepositoryAdapter";
+import {ContentProvider} from "../content_manager/ContentProvider";
+import {RepositoryAdapter} from "../repository_adapter/RepositoryAdapter";
+import {FileSystemRepositoryAdapter} from "../repository_adapter/file_system/FileSystemRepositoryAdapter";
+import {OverviewGenerator} from '../generate_overview/OverviewGenerator';
+import {IndividualRepository} from './IndividualRepository';
+import {IndividualRepositoryManager} from './IndividualRepositoryManager';
+import {ConfigManager} from "../config/ConfigManager";
+import {Task, TaskQueue} from "./TaskQueue";
+import {Logger} from "../logging/Logger";
+import {LogLevel} from "../logging/LogLevel";
+import {pathListIncludes} from "../utils/PathComparator";
 
 
 export class RepositoryCreator {
     
     public async generateRepositories(): Promise<void> {  
         let originRepositoryFiles: RepositoryFile[] = await this.retrieveOriginRepositoryFiles();
+        originRepositoryFiles = this.filterRepositoryList(originRepositoryFiles)
+
         let individualRepositoryManager: IndividualRepositoryManager = new IndividualRepositoryManager();
         let individualRepositories: IndividualRepository[] = individualRepositoryManager.getIndividualRepositories();   
 
@@ -30,6 +33,19 @@ export class RepositoryCreator {
             let overviewGenerator = new OverviewGenerator(this.generateRepositoryAdapter());
             overviewGenerator.generateOverviewPage(contentProviders);
         }
+    }
+
+    /**
+     * Filter the repository file list to only include the configured subset from
+     * repositoryConfig.json -> local -> subsetPaths
+     */
+    private filterRepositoryList(repositoryFiles: RepositoryFile[]): RepositoryFile[] {
+        const config = ConfigManager.getInstance().getRepositoryConfig().local
+
+        // return all paths, if no subset is configured
+        if (!config.subsetPaths) return repositoryFiles
+
+        return repositoryFiles.filter(it => pathListIncludes(config.subsetPaths, it.path))
     }
 
     private async startRepositoryGenerationTasks(originRepositoryFiles: RepositoryFile[], individualRepositories: IndividualRepository[]): Promise<ContentProvider[]> {
