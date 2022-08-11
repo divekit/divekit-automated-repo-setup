@@ -36,16 +36,18 @@ export class RepositoryCreator {
     }
 
     /**
-     * Filter the repository file list to only include the configured subset from
+     * Only while running in local mode: Filter the repository file list to only include the configured subset from
      * repositoryConfig.json -> local -> subsetPaths
      */
     private filterRepositoryList(repositoryFiles: RepositoryFile[]): RepositoryFile[] {
-        const config = ConfigManager.getInstance().getRepositoryConfig().local
+        const config = ConfigManager.getInstance().getRepositoryConfig()
+        const subsetPaths = config.local.subsetPaths
 
-        // return all paths, if no subset is configured
-        if (!config.subsetPaths) return repositoryFiles
+        // return all paths, if no subset is configured, or we are not in local mode
+        if (!config.general.localMode) return repositoryFiles
+        if (!subsetPaths) return repositoryFiles
 
-        return repositoryFiles.filter(it => pathListIncludes(config.subsetPaths, it.path))
+        return repositoryFiles.filter(it => pathListIncludes(subsetPaths, it.path))
     }
 
     private async startRepositoryGenerationTasks(originRepositoryFiles: RepositoryFile[], individualRepositories: IndividualRepository[]): Promise<ContentProvider[]> {
