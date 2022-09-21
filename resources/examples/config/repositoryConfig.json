@@ -19,7 +19,8 @@
         "savedIndividualRepositoriesFileName": "ms-spring.json"
     },
     "local": {
-        "originRepositoryFilePath": ""
+        "originRepositoryFilePath": "",
+        "subsetPaths": []
     },
     "remote": {
         "originRepositoryId": 1012,
