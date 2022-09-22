@@ -1,11 +1,11 @@
 {
   "name": "@divekit/automated-repo-setup",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
-  "main": "main.js",
+  "main": "build/main/index.js",
   "bin": {
-    "automated-repo-setup": "build/main/main.js",
-    "ars": "build/main/main.js"
+    "automated-repo-setup": "build/main/bin/ars.js",
+    "ars": "build/main/bin/ars.js"
   },
   "publishConfig": {
     "access": "public"
