@@ -71,7 +71,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
                         Logger.getInstance().log(`Added User ${user.username} to project`, LogLevel.Info, this.individualRepository!.id!, true);
                     } catch (error) {
                         Logger.getInstance().log(`Could not add user ${members[i]}`, LogLevel.Warning, this.individualRepository!.id!, true);
-                        Logger.getInstance().log(error, LogLevel.Warning, this.individualRepository!.id!, true);
+                        Logger.getInstance().log(<any> error, LogLevel.Warning, this.individualRepository!.id!, true);
                     }
                 } else {
                     Logger.getInstance().log(`Could not find user ${members[i]} by name`, LogLevel.Warning, this.individualRepository!.id!, true);

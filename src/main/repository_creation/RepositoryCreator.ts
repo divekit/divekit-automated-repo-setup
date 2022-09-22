@@ -95,7 +95,7 @@ export class RepositoryCreator {
                 errorMsg = errorMsg + " (Members: " + individualRepository.getMembersList() + ")";
             }
             Logger.getInstance().log(errorMsg, LogLevel.Error, individualRepository.id!);
-            Logger.getInstance().log(error, LogLevel.Error, individualRepository.id!);
+            Logger.getInstance().log(<any> error, LogLevel.Error, individualRepository.id!);
             throw error;
         }
     }

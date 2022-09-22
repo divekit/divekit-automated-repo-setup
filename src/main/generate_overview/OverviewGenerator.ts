@@ -32,7 +32,7 @@ export class OverviewGenerator {
             await this.repositoryAdapter.addOverviewToOverviewRepository({ path: filePath, content: content, encoding: "text" });
         } catch (error) {
             Logger.getInstance().log("An error occurred while saving the overview. Keep in mind that a backup overview file was placed in the overview folder", LogLevel.Error);
-            Logger.getInstance().log(error, LogLevel.Error);
+            Logger.getInstance().log(<any> error, LogLevel.Error);
         }
     }
 
