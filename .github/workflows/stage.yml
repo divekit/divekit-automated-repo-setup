@@ -1,0 +1,41 @@
+name: Publish beta package to NPM
+
+on:
+  push:
+    branches: [ stage ]
+  pull_request:
+    branches: [ stage ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Extract version
+        id: extract_version
+        uses: Saionaro/extract-package-version@v1.0.6
+      - name: Validate version is a beta version # fail if not
+        if: ${{!contains(steps.extract_version.outputs.version, 'beta')}}
+        uses: actions/github-script@v3
+        with:
+          script: core.setFailed('Version must not include beta tag!')
+      - name: Build package
+        run: npm ci
+      - name: install tsc
+        run: npm install tsc
+      - name: compile
+        run: tsc
+      - name: Publish to npm
+        id: publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          tag: beta
+      - name: Validate version changed
+        if: steps.publish.outputs.type == 'none'
+        uses: actions/github-script@v3
+        with:
+          script: core.setFailed('Nothing published, bump beta version!')
