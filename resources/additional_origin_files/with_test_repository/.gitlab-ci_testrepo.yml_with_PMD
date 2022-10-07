@@ -1,0 +1,32 @@
+image: maven:3-jdk-11
+
+stages:
+  - build
+  - deploy
+
+build: # Build test reports
+  stage: build
+  script:
+    - chmod ugo+x ./setup-test-environment.sh
+    - ./setup-test-environment.sh
+    - mvn pmd:pmd # buildcleancodereport
+    - mvn verify -fn # Always return status code 0 => Continue with the next stage
+  allow_failure: true
+  artifacts: # Keep reports for the next stage
+    paths:
+      - target/pmd.xml
+      - target/surefire-reports/TEST-*.xml
+
+pages: # Deploy test-report page
+  image: node:latest # use nodejs enviroment
+  stage: deploy
+  script:
+    - npm install @pschm/report-mapper # installmapper for clean code reports
+    - npx report-mapper # run mapper and generate unified xml file
+    - npm install @archi-lab/generate-report # install page generator
+    - npx generate-report --title $CI_PROJECT_NAME # genrate page
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
