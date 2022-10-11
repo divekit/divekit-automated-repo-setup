@@ -10,3 +10,4 @@ resources/test/
 resources/tmp/
 resources/individual_repositories/
 resources/config/
+resources/additional_origin_files/with_test_repository/.gitlab-ci_testrepo.yml
