@@ -34,6 +34,11 @@ export class ConfigManager {
             variableExtensionsConfig: this.loadConfigFromLocalFiles("variableExtensionsConfig"), 
             variationsConfig: this.loadConfigFromLocalFiles("variationsConfig"),
         };
+        // set the log level
+        if (this.configs.repositoryConfig) {
+            Logger.setLogLevel(this.configs.repositoryConfig.general.globalLogLevel);
+            Logger.getInstance().debug("Logger.getLogLevel(): " + Logger.getLogLevel());
+        }
     }
 
     private loadConfigFromLocalFiles(configName: string): any | undefined {

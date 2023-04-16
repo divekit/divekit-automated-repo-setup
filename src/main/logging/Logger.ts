@@ -4,7 +4,7 @@ import {LogLevel} from "./LogLevel";
 export class Logger {
 
     private static instance: Logger;
-    private static globalLogLevel: LogLevel = LogLevel.Warning;
+    private static globalLogLevel: LogLevel = LogLevel.Info;
 
     public static getInstance() {
         if (!this.instance) {
@@ -16,8 +16,44 @@ export class Logger {
     private logQueue: { [id: string] : (string | Object)[] } = {};
 
 
-    public static setLogLevel(logLevel: LogLevel): void {
-        Logger.globalLogLevel = logLevel;
+    public static setLogLevel(logLevelString?: string): void {
+        if (logLevelString === undefined) {
+            return;
+        }
+        const logLevelStringLower = logLevelString.toLowerCase();
+        switch (logLevelStringLower) {
+            case 'debug':
+                Logger.globalLogLevel = LogLevel.Debug;
+                break;
+            case 'info':
+                Logger.globalLogLevel = LogLevel.Info;
+                break;
+            case 'warning':
+                Logger.globalLogLevel =  LogLevel.Warning;
+                break;
+            case 'error':
+                Logger.globalLogLevel =  LogLevel.Error;
+                break;
+            default:
+                throw new Error(`Invalid 'globalLogLevel' detected in repositoryConfig.json: ${logLevelString}`);
+        }
+    }
+
+    public static getLogLevelString(): string {
+        switch (Logger.globalLogLevel) {
+            case LogLevel.Debug:
+                return 'Debug';
+                break;
+            case LogLevel.Info:
+                return 'Info';
+                break;
+            case LogLevel.Warning:
+                return 'Warning';
+                break;
+            case LogLevel.Error:
+                return 'Error';
+                break;
+        }
     }
 
     public static getLogLevel(): LogLevel {
@@ -36,8 +72,12 @@ export class Logger {
         this.log(message, LogLevel.Info, id, waitWithLogging);
     }
 
+    public debug(message: string | Object, id?: string, waitWithLogging: boolean = false) {
+        this.log(message, LogLevel.Debug, id, waitWithLogging);
+    }
+
     public log(message: string | Object, logLevel: LogLevel = LogLevel.Info, id?: string, waitWithLogging: boolean = false) {
-        if (logLevel < Logger.globalLogLevel) return;
+        if (Logger.globalLogLevel > logLevel) return;
 
         let logMessage = this.constructLogMessage(message, logLevel, id);
         if (waitWithLogging) {
@@ -74,7 +114,8 @@ export class Logger {
         if (message instanceof Object) {
             return message;
         } else {
-            let logLevelMessage = "[" + logLevel + "]";
+            let logLevelString = Logger.getLogLevelString()
+            let logLevelMessage = "[" + logLevelString + "]";
             let idMessage = id ? "[" + id + "]" : "";
             return logLevelMessage + idMessage + " " + message;
         }

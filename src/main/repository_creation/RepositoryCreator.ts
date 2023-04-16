@@ -10,22 +10,21 @@ import {IndividualRepositoryManager} from './IndividualRepositoryManager';
 import {ConfigManager} from "../config/ConfigManager";
 import {Task, TaskQueue} from "./TaskQueue";
 import {Logger} from "../logging/Logger";
-import {LogLevel} from "../logging/LogLevel";
 import {pathListIncludes} from "../utils/PathComparator";
 
 
 export class RepositoryCreator {
     
-    public async generateRepositories(): Promise<void> {  
+    public async generateRepositories(): Promise<void> {
         let originRepositoryFiles: RepositoryFile[] = await this.retrieveOriginRepositoryFiles();
         originRepositoryFiles = this.filterRepositoryList(originRepositoryFiles)
 
         let individualRepositoryManager: IndividualRepositoryManager = new IndividualRepositoryManager();
         let individualRepositories: IndividualRepository[] = individualRepositoryManager.getIndividualRepositories();   
 
-        Logger.getInstance().info("Start preparing environment");
+        Logger.getInstance().debug("Start preparing environment");
         await this.generateRepositoryAdapter().prepareEnvironment();
-        Logger.getInstance().info("Finished preparing environment");
+        Logger.getInstance().debug("Finished preparing environment");
 
         let contentProviders = await this.startRepositoryGenerationTasks(originRepositoryFiles, individualRepositories);
 
