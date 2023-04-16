@@ -1,10 +1,11 @@
-import { MessageChannel } from "worker_threads";
-import { LogLevel } from "./LogLevel";
+import {LogLevel} from "./LogLevel";
 
 
 export class Logger {
 
     private static instance: Logger;
+    private static globalLogLevel: LogLevel = LogLevel.Warning;
+
     public static getInstance() {
         if (!this.instance) {
             this.instance = new Logger();
@@ -14,9 +15,31 @@ export class Logger {
 
     private logQueue: { [id: string] : (string | Object)[] } = {};
 
-    public log(message: string | Object, logLevel: LogLevel = LogLevel.Info, id?: string, waitWithLogging: boolean = false) {
-        let logMessage = this.constructLogMessage(message, logLevel, id);
 
+    public static setLogLevel(logLevel: LogLevel): void {
+        Logger.globalLogLevel = logLevel;
+    }
+
+    public static getLogLevel(): LogLevel {
+        return Logger.globalLogLevel;
+    }
+
+    public warning(message: string | Object, id?: string, waitWithLogging: boolean = false) {
+        this.log(message, LogLevel.Warning, id, waitWithLogging);
+    }
+
+    public error(message: string | Object, id?: string, waitWithLogging: boolean = false) {
+        this.log(message, LogLevel.Error, id, waitWithLogging);
+    }
+
+    public info(message: string | Object, id?: string, waitWithLogging: boolean = false) {
+        this.log(message, LogLevel.Info, id, waitWithLogging);
+    }
+
+    public log(message: string | Object, logLevel: LogLevel = LogLevel.Info, id?: string, waitWithLogging: boolean = false) {
+        if (logLevel < Logger.globalLogLevel) return;
+
+        let logMessage = this.constructLogMessage(message, logLevel, id);
         if (waitWithLogging) {
             if (id) {
                 if (!this.logQueue[id]) {
@@ -33,6 +56,7 @@ export class Logger {
             console.log(logMessage);
         }
     }
+
 
     public publishLogForId(id: string) {
         if (!this.logQueue[id]) {
@@ -55,4 +79,7 @@ export class Logger {
             return logLevelMessage + idMessage + " " + message;
         }
     }
+
+
+
 }

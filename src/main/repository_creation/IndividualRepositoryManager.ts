@@ -82,22 +82,22 @@ export class IndividualRepositoryManager {
     private updateIndividualVariations(individualRepositories: IndividualRepository[]) {
         for (let individualRepository of individualRepositories) {
             individualRepository.individualVariation = this.variationGenerator.generateIndividualVariation({ RepositoryId: individualRepository.id! }, individualRepository.individualSelectionCollection!);
-            Logger.getInstance().log("Generated variables for repository", LogLevel.Info, individualRepository.id!);
-            Logger.getInstance().log(individualRepository.individualVariation);
+            Logger.getInstance().info("Generated variables for repository", individualRepository.id!);
+            Logger.getInstance().info(individualRepository.individualVariation);
         }
     }
 
     private createIndividualRepositories(): IndividualRepository[] {
-        Logger.getInstance().log("Load existing individual repositories");
+        Logger.getInstance().info("Load existing individual repositories");
         let individualRepositories: IndividualRepository[] = this.repositoryConfig.individualRepositoryPersist.useSavedIndividualRepositories 
                                                                 ? this.loadIndividualRepositories() : [];
         if (this.repositoryConfig.repository.repositoryMembers.length == 0) {
-            Logger.getInstance().log("Create missing individual repositories without members");
+            Logger.getInstance().info("Create missing individual repositories without members");
             for (let i = individualRepositories.length; i < this.repositoryConfig.repository.repositoryCount; i++) {
                 individualRepositories.push(this.createIndividualRepository(undefined));
             }
         } else {
-            Logger.getInstance().log("Create missing individual repositories with members");
+            Logger.getInstance().info("Create missing individual repositories with members");
             for (let members of this.repositoryConfig.repository.repositoryMembers) {
                 if (!this.doesIndividualRepositoryExist(individualRepositories, members)) {
                     individualRepositories.push(this.createIndividualRepository(members));
@@ -110,10 +110,10 @@ export class IndividualRepositoryManager {
 
     private filterIndividualRepositories(individualRepositories: IndividualRepository[]): IndividualRepository[] {
         if (this.repositoryConfig.repository.repositoryMembers.length == 0) {
-            Logger.getInstance().log("Filter existing individual repositories by count");
+            Logger.getInstance().info("Filter existing individual repositories by count");
             individualRepositories = individualRepositories.splice(0, this.repositoryConfig.repository.repositoryCount);
         } else {
-            Logger.getInstance().log("Filter existing individual repositories by members");
+            Logger.getInstance().info("Filter existing individual repositories by members");
             let tmpIndividualRepositories: IndividualRepository[] = [];
             for (let individualRepository of individualRepositories) {
                 for (let members of this.repositoryConfig.repository.repositoryMembers) {

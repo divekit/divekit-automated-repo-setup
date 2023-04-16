@@ -8,7 +8,7 @@ const main = async () => {
         let repositoryCreator: RepositoryCreator = new RepositoryCreator();
         await repositoryCreator.generateRepositories();
     } catch (error) {
-        Logger.getInstance().log(<any> error, LogLevel.Error);
+        Logger.getInstance().error(<any> error);
     }   
 }
 

@@ -23,9 +23,9 @@ export class RepositoryCreator {
         let individualRepositoryManager: IndividualRepositoryManager = new IndividualRepositoryManager();
         let individualRepositories: IndividualRepository[] = individualRepositoryManager.getIndividualRepositories();   
 
-        Logger.getInstance().log("Start preparing environment");
+        Logger.getInstance().info("Start preparing environment");
         await this.generateRepositoryAdapter().prepareEnvironment();
-        Logger.getInstance().log("Finished preparing environment");
+        Logger.getInstance().info("Finished preparing environment");
 
         let contentProviders = await this.startRepositoryGenerationTasks(originRepositoryFiles, individualRepositories);
 
@@ -51,7 +51,7 @@ export class RepositoryCreator {
     }
 
     private async startRepositoryGenerationTasks(originRepositoryFiles: RepositoryFile[], individualRepositories: IndividualRepository[]): Promise<ContentProvider[]> {
-        Logger.getInstance().log("Start generating repositories");
+        Logger.getInstance().info("Start generating repositories");
         let startTime = new Date().getTime();
 
         let contentProviderTasks: Task<ContentProvider | Error>[] = [];
@@ -75,7 +75,7 @@ export class RepositoryCreator {
         }
 
         let finishedTime = new Date().getTime();
-        Logger.getInstance().log(`Finished generating repositories (Took ${ ((finishedTime - startTime) / 1000 / 60).toFixed(2) } minutes)`);
+        Logger.getInstance().info(`Finished generating repositories (Took ${ ((finishedTime - startTime) / 1000 / 60).toFixed(2) } minutes)`);
         return contentProviders;
     }
 
@@ -87,15 +87,15 @@ export class RepositoryCreator {
             let repositoryAdapter = this.generateRepositoryAdapter(individualRepository);
             let contentProvider = new ContentProvider(repositoryAdapter, individualRepository);
             await contentProvider.provideRepositoriesWithContent(originRepositoryFiles, codeRepositoryName, testRepositoryName); 
-            Logger.getInstance().log(`Finished generating repository`, LogLevel.Info, individualRepository.id!);
+            Logger.getInstance().info(`Finished generating repository`, individualRepository.id!);
             return contentProvider;
         } catch (error) {
             let errorMsg = `An error occurred while generating repository`;
             if (individualRepository.members) {
                 errorMsg = errorMsg + " (Members: " + individualRepository.getMembersList() + ")";
             }
-            Logger.getInstance().log(errorMsg, LogLevel.Error, individualRepository.id!);
-            Logger.getInstance().log(<any> error, LogLevel.Error, individualRepository.id!);
+            Logger.getInstance().error(errorMsg, individualRepository.id!);
+            Logger.getInstance().error(<any> error, individualRepository.id!);
             throw error;
         }
     }
@@ -108,7 +108,7 @@ export class RepositoryCreator {
             originRepositoryFiles = contentRetriever.filterOriginFiles(originRepositoryFiles);
             return originRepositoryFiles;
         } catch (error) {
-            Logger.getInstance().log("Could not retrieve origin project", LogLevel.Error);
+            Logger.getInstance().error("Could not retrieve origin project");
             throw error;
         }
     }

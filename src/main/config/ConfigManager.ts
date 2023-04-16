@@ -73,7 +73,7 @@ export class ConfigManager {
         try {
             return JSON.parse(configContent);
         } catch (error) {
-            Logger.getInstance().log("Could not parse " + configName, LogLevel.Error);
+            Logger.getInstance().error("Could not parse " + configName);
             throw error;
         }
     }

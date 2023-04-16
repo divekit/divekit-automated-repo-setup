@@ -115,12 +115,12 @@ export class VariableFaultDetector {
     public detectFaults(repositoryFile: RepositoryFile) {
         if (!this.ignoreFile(repositoryFile)) {
             if (this.variableDelimiter.length > 0 && (this.detectRemainingDelimiter(repositoryFile.path) || this.detectRemainingDelimiter(repositoryFile.content))) {
-                Logger.getInstance().log(`There are remaining "${this.variableDelimiter}" in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
+                Logger.getInstance().warning(`There are remaining "${this.variableDelimiter}" in the file: ${repositoryFile.path}`, this.individualRepository.id!, true);
             }
 
             for (let blackListedVariableValue of this.blackListedVariableValues) {
                 if (repositoryFile.path.includes(blackListedVariableValue) || repositoryFile.content.includes(blackListedVariableValue)) {
-                    Logger.getInstance().log(`The variable value "${blackListedVariableValue}" should not be contained in the file: ${repositoryFile.path}`, LogLevel.Warning, this.individualRepository.id!, true);
+                    Logger.getInstance().warning(`The variable value "${blackListedVariableValue}" should not be contained in the file: ${repositoryFile.path}`, this.individualRepository.id!, true);
                 }
             }
         }
