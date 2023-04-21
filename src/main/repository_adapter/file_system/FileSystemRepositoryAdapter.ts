@@ -97,7 +97,7 @@ export class FileSystemRepositoryAdapter implements RepositoryAdapter {
             let directoryPath = path.dirname(repositoryFile.path);
             fs.mkdirSync(directoryPath, { recursive: true });
             // Write File
-            fs.writeFileSync(repositoryFile.path, repositoryFile.content, { encoding: repositoryFile.encoding });
+            fs.writeFileSync(repositoryFile.path, repositoryFile.content, { encoding: repositoryFile.encoding as BufferEncoding });
         }
     }
 
