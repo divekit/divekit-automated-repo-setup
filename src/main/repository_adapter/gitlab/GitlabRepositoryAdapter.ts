@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import * as readline from 'node:readline/promises';
 
 import { RepositoryAdapter } from "../RepositoryAdapter";
 import { RepositoryFile } from "../../content_manager/RepositoryFile";
@@ -210,6 +211,17 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
 
     public async prepareEnvironment() { 
         if (this.repositoryConfig.remote.deleteExistingRepositories) {
+            const rl = readline.createInterface({input: process.stdin, output: process.stdout});
+
+            const answer = await rl.question(`You are about to delete all repositories associated with this environment.\n  Continue? [y/N] `);
+            rl.close();
+          
+            if(answer !== 'y') {
+              console.log("User terminated environment preparation");
+              process.exit();
+            }
+          
+            console.log("Clearing current environment..");
             await this.deleteProjectsInGroup(this.repositoryConfig.remote.codeRepositoryTargetGroupId);
 
             if (this.repositoryConfig.general.createTestRepository) {
