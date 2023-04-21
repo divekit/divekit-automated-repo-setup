@@ -1,12 +1,11 @@
 import path from "path";
 import * as fs from 'fs';
 
-import { RepositoryAdapter } from "../repository_adapter/RepositoryAdapter";
-import { TimeStampCreator } from '../utils/TimeStampCreator';
-import { ConfigManager } from "../config/ConfigManager";
-import { ContentProvider } from "../content_manager/ContentProvider";
-import { Logger } from "../logging/Logger";
-import { LogLevel } from "../logging/LogLevel";
+import {RepositoryAdapter} from "../repository_adapter/RepositoryAdapter";
+import {TimeStampCreator} from '../utils/TimeStampCreator';
+import {ConfigManager} from "../config/ConfigManager";
+import {ContentProvider} from "../content_manager/ContentProvider";
+import {Logger} from "../logging/Logger";
 
 
 export class OverviewGenerator {
@@ -31,8 +30,8 @@ export class OverviewGenerator {
         try {
             await this.repositoryAdapter.addOverviewToOverviewRepository({ path: filePath, content: content, encoding: "text" });
         } catch (error) {
-            Logger.getInstance().log("An error occurred while saving the overview. Keep in mind that a backup overview file was placed in the overview folder", LogLevel.Error);
-            Logger.getInstance().log(<any> error, LogLevel.Error);
+            Logger.getInstance().error("An error occurred while saving the overview. Keep in mind that a backup overview file was placed in the overview folder");
+            Logger.getInstance().error(<any> error);
         }
     }
 

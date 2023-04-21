@@ -44,7 +44,7 @@ export class FileSystemRepositoryAdapter implements RepositoryAdapter {
             if (originFolder.length == 0) {
                 let directoryNames = fs.readdirSync(this.inputFolder);
                 if (directoryNames.length == 0) {
-                    Logger.getInstance().log(`There was no origin repository found in folder: ${this.inputFolder}`, LogLevel.Error);
+                    Logger.getInstance().error(`There was no origin repository found in folder: ${this.inputFolder}`);
                     reject();
                 }
         

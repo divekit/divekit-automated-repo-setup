@@ -5,7 +5,8 @@
         "variateRepositories": true,
         "deleteSolution": false,
         "activateVariableValueWarnings": true,
-        "maxConcurrentWorkers": 1
+        "maxConcurrentWorkers": 1,
+        "globalLogLevel": "Info"
     },
     "repository": {
         "repositoryName": "st2-praktikum",

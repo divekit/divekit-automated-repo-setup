@@ -5,5 +5,6 @@ export interface GeneralRecord {
     variateRepositories: boolean,
     deleteSolution: boolean,
     activateVariableValueWarnings: boolean,
-    maxConcurrentWorkers: number
+    maxConcurrentWorkers: number,
+    globalLogLevel?: string
 }
