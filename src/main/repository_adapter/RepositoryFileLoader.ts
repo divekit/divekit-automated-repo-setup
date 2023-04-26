@@ -25,7 +25,7 @@ export class RepositoryFileLoader {
     private static loadRepositoryFile(originFolder: string, filePath : string): RepositoryFile {
         let relativeFilePath = path.relative(originFolder, filePath);
         let fileEncoding = EncodingRetriever.determineFileEncoding(filePath);
-        let fileContent = fs.readFileSync(filePath, { encoding: fileEncoding });
+        let fileContent = fs.readFileSync(filePath, { encoding: fileEncoding as BufferEncoding });
 
         return { path: relativeFilePath, content: fileContent, encoding: fileEncoding };
     }
