@@ -1,11 +1,11 @@
 import * as dotenv from 'dotenv'
 import * as readline from 'node:readline/promises';
+import { URL } from 'node:url';
 import { RepositoryAdapter } from "../RepositoryAdapter";
 import { RepositoryFile } from "../../content_manager/RepositoryFile";
 import { AccessLevel, CommitSchema, Gitlab, UserSchema, ProjectVariableSchema, ExpandedProjectSchema } from "@gitbeaker/rest";
 import { ConfigManager } from "../../config/ConfigManager";
 import { EncodingRetriever } from "../../content_manager/EncodingRetriever";
-import { GitlabProject } from "./GitlabProject";
 import { IndividualRepository } from "../../repository_creation/IndividualRepository";
 import { Logger } from "../../logging/Logger";
 
@@ -18,8 +18,8 @@ const gitlab = new Gitlab({
 
 export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO create POJOs for any types
 
-    private codeRepository: GitlabProject | null = null;
-    private testRepository: GitlabProject | null = null;
+    private codeRepository: ExpandedProjectSchema | null = null;
+    private testRepository: ExpandedProjectSchema | null = null;
 
     private repositoryConfig = ConfigManager.getInstance().getRepositoryConfig();
 
@@ -50,13 +50,13 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     public async createCodeRepository(repositoryName: string): Promise<void> {
         let existingRepository = await this.searchForRepository(repositoryName, this.repositoryConfig.remote.codeRepositoryTargetGroupId);
         this.codeRepository = existingRepository ? existingRepository :
-            await gitlab.Projects.create({userId: this.repositoryConfig.remote.codeRepositoryTargetGroupId, path: repositoryName}) as GitlabProject;
+            await gitlab.Projects.create({namespaceId: this.repositoryConfig.remote.codeRepositoryTargetGroupId, name: repositoryName}) as ExpandedProjectSchema;
     }
 
     public async createTestRepository(repositoryName: string): Promise<void> {
         let existingRepository = await this.searchForRepository(repositoryName, this.repositoryConfig.remote.testRepositoryTargetGroupId);
         this.testRepository = existingRepository ? existingRepository :
-            await gitlab.Projects.create({userId: this.repositoryConfig.remote.testRepositoryTargetGroupId, path: repositoryName}) as GitlabProject;
+            await gitlab.Projects.create({namespaceId: this.repositoryConfig.remote.testRepositoryTargetGroupId, name: repositoryName}) as ExpandedProjectSchema;
     }
 
     public async addMembersToCodeRepository(members: string[] | undefined): Promise<void> {
@@ -78,8 +78,8 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         }
     }
 
-    private async searchForRepository(repositoryName: string, groupId: number): Promise<GitlabProject | null> {
-        let foundProjects = (await gitlab.Projects.search(repositoryName, {showExpanded: true})).data as ExpandedProjectSchema[] as GitlabProject[];
+    private async searchForRepository(repositoryName: string, groupId: number): Promise<ExpandedProjectSchema | null> {
+        let foundProjects = (await gitlab.Projects.search(repositoryName, {showExpanded: true})).data as ExpandedProjectSchema[];
 
         for (let foundProject of foundProjects) {
             if (foundProject.namespace.id == groupId) {
@@ -109,6 +109,30 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         await gitlab.Commits.create(this.repositoryConfig.overview.overviewRepositoryId, "master", "add overview file", commitActions);
     }
 
+    private async setInboundTokenPermissions(): Promise<void> {
+        // FIXME: Since there is no REST-API endpoint for changing the job token scope,
+        //        we need to manually fire a GraphQL request.
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/351740
+
+        let url = new URL("/api/graphql", process.env.HOST!);
+
+        const postData = `{"variables":null,"query":"mutation{ciJobTokenScopeAddProject(input:{direction:INBOUND,projectPath:\\"${this.codeRepository!.path_with_namespace}\\",targetProjectPath:\\"${this.testRepository!.path_with_namespace}\\"}){errors}}"}`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            body: postData,
+            headers: {
+                "Authorization": `Bearer ${process.env.API_TOKEN}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const json = await response.json();
+        if((json.data.ciJobTokenScopeAddProject.errors as any[]).length > 0) {
+            throw new Error("Errors occured while setting inbound permissions");
+        }
+    }
+
     public async linkCodeAndTestRepository(): Promise<void> {
         // Set Environment Variables and create pipeline trigger
         if (!(await this.doesVariableExistInRepository(this.testRepository!, 'CODE_REPO_URL'))) {
@@ -122,9 +146,11 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
             const pipelineTrigger: any = await gitlab.PipelineTriggerTokens.create(this.testRepository!.id, "other_project");
             await gitlab.ProjectVariables.create(this.codeRepository!.id, 'TEST_REPO_TRIGGER_TOKEN', pipelineTrigger.token);
         }
+
+        await this.setInboundTokenPermissions();
     }
 
-    private async doesVariableExistInRepository(repository: GitlabProject, variableName: string): Promise<boolean> {
+    private async doesVariableExistInRepository(repository: ExpandedProjectSchema, variableName: string): Promise<boolean> {
         let foundVariables = await gitlab.ProjectVariables.all(repository.id) as ProjectVariableSchema[];
 
         for (let foundVariable of foundVariables) {
@@ -162,7 +188,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         return commitActions;
     }
 
-    private async IsAtLeastOneCommitInRepository(repository: GitlabProject): Promise<boolean> {
+    private async IsAtLeastOneCommitInRepository(repository: ExpandedProjectSchema): Promise<boolean> {
         let commits = await gitlab.Commits.all(repository.id) as CommitSchema[];
         return commits.length > 0;
     }
