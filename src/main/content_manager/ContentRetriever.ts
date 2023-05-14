@@ -22,17 +22,23 @@ export class ContentRetriever {
 
     public async retrieveOriginFiles() : Promise<RepositoryFile[]> {
         let originFiles = await this.repositoryAdapter.retrieveOriginFiles();
+        let additionalFiles;
 
         if (ConfigManager.getInstance().getRepositoryConfig().general.createTestRepository) {
-            originFiles = originFiles.concat(RepositoryFileLoader.loadRepositoryFiles(this.additionalFilesWithTestRepositoryFolder, 
-                this.additionalFilesWithTestRepositoryFolder));
+            additionalFiles = RepositoryFileLoader.loadRepositoryFiles(this.additionalFilesWithTestRepositoryFolder,
+                this.additionalFilesWithTestRepositoryFolder);
         } else {
-            originFiles = originFiles.concat(RepositoryFileLoader.loadRepositoryFiles(this.additionalFilesWithoutTestRepositoryFolder, 
-                this.additionalFilesWithoutTestRepositoryFolder));
+            additionalFiles = RepositoryFileLoader.loadRepositoryFiles(this.additionalFilesWithoutTestRepositoryFolder,
+                this.additionalFilesWithoutTestRepositoryFolder);
         }
 
-        return originFiles;
+        additionalFiles = additionalFiles.filter((additionalFile) =>
+            !originFiles.some(originFile => originFile.path === additionalFile.path));
+
+        return originFiles.concat(additionalFiles);
     }
+
+
 
     public filterOriginFiles(repositoryFiles: RepositoryFile[]) : RepositoryFile[] {
         let filteredRepositoryFiles : RepositoryFile[] = [];

@@ -18,6 +18,8 @@ const gitlab = new Gitlab({
     token: process.env.API_TOKEN,
 });
 
+// Get main branch name from environment variable or default to "master"
+const mainBranch = process.env.DIVEKIT_MAINBRANCH_NAME || "master";
 
 export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO create POJOs for any types
 
@@ -38,10 +40,10 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         for (var treeFile of tree) {
             if (treeFile.type === "blob") { // process only files not directories
                 if (EncodingRetriever.isBlob(treeFile.path)) {
-                    let file = await gitlab.RepositoryFiles.show(this.repositoryConfig.remote.originRepositoryId, treeFile.path, "master");
+                    let file = await gitlab.RepositoryFiles.show(this.repositoryConfig.remote.originRepositoryId, treeFile.path, mainBranch);
                     repositoryFiles.push({path: treeFile.path, content: file.content, encoding: file.encoding});
                 } else {
-                    let fileContent: any = await gitlab.RepositoryFiles.showRaw(this.repositoryConfig.remote.originRepositoryId, treeFile.path, "master");
+                    let fileContent: any = await gitlab.RepositoryFiles.showRaw(this.repositoryConfig.remote.originRepositoryId, treeFile.path, mainBranch);
                     repositoryFiles.push({path: treeFile.path, content: fileContent});
                 }
             }
@@ -109,7 +111,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     public async addOverviewToOverviewRepository(overviewContent: RepositoryFile): Promise<void> {
         let commitActions: any[] = [{ action: 'create', filePath: overviewContent.path, content: overviewContent.content }];
 
-        await gitlab.Commits.create(this.repositoryConfig.overview.overviewRepositoryId, "master", "add overview file", commitActions);
+        await gitlab.Commits.create(this.repositoryConfig.overview.overviewRepositoryId, mainBranch, "add overview file", commitActions);
     }
 
     public async linkCodeAndTestRepository(): Promise<void> {
@@ -143,7 +145,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         let codeRepositoryCommitActions = this.convertFileArrayToCommits(codeRepositoryFiles);
 
         if (!(await this.IsAtLeastOneCommitInRepository(this.codeRepository!))) {
-            await gitlab.Commits.create(this.codeRepository!.id, "master", "initial commit", codeRepositoryCommitActions);
+            await gitlab.Commits.create(this.codeRepository!.id, mainBranch, "initial commit", codeRepositoryCommitActions);
         }
     }
 
@@ -151,7 +153,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         let testRepositoryCommitActions = this.convertFileArrayToCommits(testRepositoryFiles);
 
         if (this.testRepository && testRepositoryCommitActions.length > 0 && !(await this.IsAtLeastOneCommitInRepository(this.testRepository!))) {
-            await gitlab.Commits.create(this.testRepository.id, "master", "initial commit", testRepositoryCommitActions);
+            await gitlab.Commits.create(this.testRepository.id, mainBranch, "initial commit", testRepositoryCommitActions);
         }
     }
 
