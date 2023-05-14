@@ -5,12 +5,10 @@ import { ConfigManager } from "../../config/ConfigManager";
 import { RepositoryFileLoader } from "../RepositoryFileLoader";
 import { RepositoryAdapter } from "../RepositoryAdapter";
 import { Logger } from "../../logging/Logger";
-import { LogLevel } from "../../logging/LogLevel";
-
 
 export class FileSystemRepositoryAdapter implements RepositoryAdapter {
 
-    private readonly testFolder = path.join(__dirname, '..', '..', '..', '..', 'resources', 'test');
+    private readonly testFolder = path.join('./resources/test');
     private readonly inputFolder = path.join(this.testFolder, 'input');
     private readonly outputFolder = path.join(this.testFolder, 'output');
     private readonly codeRepoFolder = path.join(this.outputFolder, 'code');
@@ -27,7 +25,7 @@ export class FileSystemRepositoryAdapter implements RepositoryAdapter {
     }
 
     public async prepareEnvironment() {
-        await fs.promises.rmdir(this.outputFolder, { recursive: true });
+        await fs.promises.rm(this.outputFolder, { recursive: true });
     }
 
     private initializeTestFolder() {
@@ -65,11 +63,11 @@ export class FileSystemRepositoryAdapter implements RepositoryAdapter {
         fs.mkdirSync(this.testRepository);
     }
 
-    async addMembersToCodeRepository(members: string[] | undefined): Promise<void> {
+    async addMembersToCodeRepository(_members: string[] | undefined): Promise<void> {
         return; // no student members on file system possible
     }
 
-    async addOverviewToOverviewRepository(overviewContent: RepositoryFile): Promise<void> {
+    async addOverviewToOverviewRepository(_overviewContent: RepositoryFile): Promise<void> {
         return; // no overview repository on file system
     }
 

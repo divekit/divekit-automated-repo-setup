@@ -110,7 +110,7 @@ export class Logger {
         delete this.logQueue[id];
     }
 
-    private constructLogMessage(message: string | Object, logLevel: LogLevel, id?: string): string | Object {
+    private constructLogMessage(message: string | Object, _logLevel: LogLevel, id?: string): string | Object {
         if (message instanceof Object) {
             return message;
         } else {

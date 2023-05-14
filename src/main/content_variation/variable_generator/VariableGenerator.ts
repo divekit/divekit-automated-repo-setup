@@ -7,8 +7,7 @@ export abstract class VariableGenerator {
 
     constructor(protected divideChar: string) { };
 
-
-    protected generateIndividualVariables(preIdentifier: string, identifier: string, variationRecord: NestedObjectVariationRecord, individualVariation: IndividualVariation) {
+    protected generateIndividualVariables(preIdentifier: string, identifier: string, variationRecord: NestedObjectVariationRecord, individualVariation: IndividualVariation): void {
         for (let key in variationRecord) {
             let value = variationRecord[key];
             if (value instanceof Object) {
@@ -23,16 +22,14 @@ export abstract class VariableGenerator {
         }
     }
 
-    protected toArray(value: string | string[]) {
+    protected toArray(value: string | string[]): string[] {
         if (Array.isArray(value)) {
             return value;
         }
-        let array = [];
-        array.push(value);
-        return array;
+        return [value];
     }
 
-    protected getRandomInt(max: number) {
+    protected getRandomInt(max: number): number {
         return Math.floor(Math.random() * Math.floor(max));
     }
 }

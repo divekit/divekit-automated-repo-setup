@@ -7,10 +7,9 @@ import { SolutionDeleter } from "../solution_deletion/SolutionDeleter";
 import { ConfigManager } from "../config/ConfigManager";
 import { RepositoryFileLoader } from "../repository_adapter/RepositoryFileLoader";
 
-
 export class ContentRetriever {
     
-    private readonly additionalFilesFolder = path.join(__dirname, '..', '..', '..', 'resources', 'additional_origin_files');
+    private readonly additionalFilesFolder = path.join('./resources/additional_origin_files');
     private readonly additionalFilesWithTestRepositoryFolder = path.join(this.additionalFilesFolder, 'with_test_repository');
     private readonly additionalFilesWithoutTestRepositoryFolder = path.join(this.additionalFilesFolder, 'without_test_repository');
 

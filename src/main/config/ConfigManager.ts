@@ -8,12 +8,10 @@ import { RepositoryConfig } from "./config_records/repository_config/RepositoryC
 import { OriginRepositoryConfig } from "./config_records/origin_repository_config/OriginRepositoryConfig";
 import { VariableExtensionsConfig } from "../content_variation/config_records/VariableExtensionsConfig";
 import { Logger } from "../logging/Logger";
-import { LogLevel } from "../logging/LogLevel";
-
 
 export class ConfigManager {
 
-    private readonly configFolder = path.join(__dirname, '..', '..', '..', 'resources', 'config');
+    private readonly configFolder = path.join('./resources/config');
 
     private configs: Configs;
 

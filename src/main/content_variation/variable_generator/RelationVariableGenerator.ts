@@ -1,4 +1,3 @@
-import { SerializationUtils } from "../SerializationUtils";
 import { IndividualSelection } from "../selections/IndividualSelection";
 import { RelationRecord } from "../config_records/relation/RelationRecord";
 import { RelationObjectRecord } from "../config_records/relation/RelationObjectRecord";

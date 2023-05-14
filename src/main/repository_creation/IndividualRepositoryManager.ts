@@ -6,12 +6,10 @@ import { TimeStampCreator } from '../utils/TimeStampCreator';
 import { IndividualRepository } from './IndividualRepository';
 import { ConfigManager } from '../config/ConfigManager';
 import { Logger } from '../logging/Logger';
-import { LogLevel } from '../logging/LogLevel';
-
 
 export class IndividualRepositoryManager {
 
-    private readonly individualRepositoriesFolder = path.join(__dirname, '..', '..', '..', 'resources', 'individual_repositories');
+    private readonly individualRepositoriesFolder = path.join('./resources/individual_repositories');
 
     private repositoryConfig = ConfigManager.getInstance().getRepositoryConfig();
     private variationGenerator: VariationGenerator;

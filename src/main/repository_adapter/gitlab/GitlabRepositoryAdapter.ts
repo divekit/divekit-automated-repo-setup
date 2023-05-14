@@ -1,16 +1,13 @@
-import dotenv from "dotenv";
+import * as dotenv from 'dotenv'
 import * as readline from 'node:readline/promises';
-
 import { RepositoryAdapter } from "../RepositoryAdapter";
 import { RepositoryFile } from "../../content_manager/RepositoryFile";
-import { CommitSchema, Gitlab, UserSchema } from "gitlab";
+import { AccessLevel, CommitSchema, Gitlab, UserSchema, ProjectVariableSchema, ExpandedProjectSchema } from "@gitbeaker/rest";
 import { ConfigManager } from "../../config/ConfigManager";
-import { AccessLevel, ResourceVariableSchema } from "gitlab/dist/types/core/templates";
 import { EncodingRetriever } from "../../content_manager/EncodingRetriever";
 import { GitlabProject } from "./GitlabProject";
 import { IndividualRepository } from "../../repository_creation/IndividualRepository";
 import { Logger } from "../../logging/Logger";
-import { LogLevel } from "../../logging/LogLevel";
 
 dotenv.config();
 const gitlab = new Gitlab({
@@ -32,7 +29,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     }
 
     public async retrieveOriginFiles(): Promise<RepositoryFile[]> {
-        let tree: any = await gitlab.Repositories.tree(this.repositoryConfig.remote.originRepositoryId, { recursive: true, per_page: Number.MAX_SAFE_INTEGER });
+        let tree: any = await gitlab.Repositories.allRepositoryTrees(this.repositoryConfig.remote.originRepositoryId);
         let repositoryFiles: RepositoryFile[] = [];
 
         for (var treeFile of tree) {
@@ -53,13 +50,13 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     public async createCodeRepository(repositoryName: string): Promise<void> {
         let existingRepository = await this.searchForRepository(repositoryName, this.repositoryConfig.remote.codeRepositoryTargetGroupId);
         this.codeRepository = existingRepository ? existingRepository :
-            await gitlab.Projects.create({namespace_id: this.repositoryConfig.remote.codeRepositoryTargetGroupId, name: repositoryName, path: repositoryName}) as GitlabProject;
+            await gitlab.Projects.create({userId: this.repositoryConfig.remote.codeRepositoryTargetGroupId, path: repositoryName}) as GitlabProject;
     }
 
     public async createTestRepository(repositoryName: string): Promise<void> {
         let existingRepository = await this.searchForRepository(repositoryName, this.repositoryConfig.remote.testRepositoryTargetGroupId);
         this.testRepository = existingRepository ? existingRepository :
-            await gitlab.Projects.create({namespace_id: this.repositoryConfig.remote.testRepositoryTargetGroupId, name: repositoryName, path: repositoryName}) as GitlabProject;
+            await gitlab.Projects.create({userId: this.repositoryConfig.remote.testRepositoryTargetGroupId, path: repositoryName}) as GitlabProject;
     }
 
     public async addMembersToCodeRepository(members: string[] | undefined): Promise<void> {
@@ -82,7 +79,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     }
 
     private async searchForRepository(repositoryName: string, groupId: number): Promise<GitlabProject | null> {
-        let foundProjects = await gitlab.Projects.search(repositoryName) as GitlabProject[];
+        let foundProjects = (await gitlab.Projects.search(repositoryName, {showExpanded: true})).data as ExpandedProjectSchema[] as GitlabProject[];
 
         for (let foundProject of foundProjects) {
             if (foundProject.namespace.id == groupId) {
@@ -93,7 +90,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     }
 
     private async searchForUser(userName: string): Promise<UserSchema | null> {
-        let users: UserSchema[] = await gitlab.Users.search(userName) as UserSchema[];
+        let users: UserSchema[] = await gitlab.Search.all("users", userName) as UserSchema[];
         if (users.length == 0) {
             return null;
         }
@@ -115,20 +112,20 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     public async linkCodeAndTestRepository(): Promise<void> {
         // Set Environment Variables and create pipeline trigger
         if (!(await this.doesVariableExistInRepository(this.testRepository!, 'CODE_REPO_URL'))) {
-            await gitlab.ProjectVariables.create(this.testRepository!.id, {key: 'CODE_REPO_URL', value: this.codeRepository!.web_url});
+            await gitlab.ProjectVariables.create(this.testRepository!.id, 'CODE_REPO_URL', this.codeRepository!.web_url);
         }
         if (!(await this.doesVariableExistInRepository(this.codeRepository!, 'TEST_REPO_TRIGGER_URL'))) {
             const triggerURL = `${this.testRepository!._links.self}/trigger/pipeline`;
-            await gitlab.ProjectVariables.create(this.codeRepository!.id, {key: 'TEST_REPO_TRIGGER_URL', value: triggerURL});
+            await gitlab.ProjectVariables.create(this.codeRepository!.id, 'TEST_REPO_TRIGGER_URL', triggerURL);
         }
         if (!(await this.doesVariableExistInRepository(this.codeRepository!, 'TEST_REPO_TRIGGER_TOKEN'))) {
-            const pipelineTrigger: any = await gitlab.Triggers.add(this.testRepository!.id, { description: "other_project" });
-            await gitlab.ProjectVariables.create(this.codeRepository!.id, {key: 'TEST_REPO_TRIGGER_TOKEN', value: pipelineTrigger.token});
+            const pipelineTrigger: any = await gitlab.PipelineTriggerTokens.create(this.testRepository!.id, "other_project");
+            await gitlab.ProjectVariables.create(this.codeRepository!.id, 'TEST_REPO_TRIGGER_TOKEN', pipelineTrigger.token);
         }
     }
 
     private async doesVariableExistInRepository(repository: GitlabProject, variableName: string): Promise<boolean> {
-        let foundVariables = await gitlab.ProjectVariables.all(repository.id) as ResourceVariableSchema[];
+        let foundVariables = await gitlab.ProjectVariables.all(repository.id) as ProjectVariableSchema[];
 
         for (let foundVariable of foundVariables) {
             if (foundVariable.key == variableName) {
@@ -231,7 +228,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     }
 
     private async deleteProjectsInGroup(groupId: number) {
-        let projects = await gitlab.GroupProjects.all(groupId);
+        let projects = await gitlab.Groups.allProjects(groupId);
         for (let project of projects) {
             await gitlab.Projects.remove(project.id);
         }

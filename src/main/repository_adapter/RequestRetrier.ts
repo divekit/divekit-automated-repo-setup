@@ -1,6 +1,3 @@
-import { TaskQueue } from "../repository_creation/TaskQueue"
-import { SolutionDeleter } from "../solution_deletion/SolutionDeleter";
-
 export type RetryFunction<T> = () => Promise<T>;
 export type StatusCodeFunction = (er: any) => number | null;
 

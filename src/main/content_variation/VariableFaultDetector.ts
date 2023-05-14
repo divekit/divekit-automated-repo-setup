@@ -1,7 +1,6 @@
 import { ConfigManager } from "../config/ConfigManager";
 import { RepositoryFile } from "../content_manager/RepositoryFile";
 import { Logger } from "../logging/Logger";
-import { LogLevel } from "../logging/LogLevel";
 import { IndividualRepository } from "../repository_creation/IndividualRepository";
 import { NestedObjectVariationRecord } from "./config_records/object/NestedObjectVariationRecord";
 import { VariationsConfig } from "./config_records/VariationsConfig";
