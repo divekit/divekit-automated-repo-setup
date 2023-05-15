@@ -5,9 +5,6 @@ import { FileManipulatorManager } from '../file_manipulator/FileManipulatorManag
 import { IndividualRepository } from '../repository_creation/IndividualRepository';
 import { IndividualSelectionCollection } from '../content_variation/selections/IndividualSelectionCollection';
 import { ConfigManager } from "../config/ConfigManager";
-import { Logger } from "../logging/Logger";
-import { LogLevel } from "../logging/LogLevel";
-
 
 export class ContentProvider {
     

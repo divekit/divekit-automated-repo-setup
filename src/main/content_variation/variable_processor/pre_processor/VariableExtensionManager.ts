@@ -43,7 +43,7 @@ export class VariableExtensionManager {
         let variableExtensionCollections: VariableExtensionCollectionRecord[] = [];
 
         for (var variableExtensionGroupId of variableExtensionGroupIds) {
-            let foundVariableExtensionGroup = null;
+            let foundVariableExtensionGroup: VariableExtensionGroupRecord | null = null;
             for (var variableExtensionGroup of variableExtensionGroups) {
                 if (variableExtensionGroup.id.toUpperCase() === variableExtensionGroupId.toUpperCase()) {
                     foundVariableExtensionGroup = variableExtensionGroup;

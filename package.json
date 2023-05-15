@@ -2,29 +2,34 @@
   "name": "@divekit/automated-repo-setup",
   "version": "0.2.4",
   "description": "",
-  "main": "build/main/index.js",
+  "main": "build/index.mjs",
   "bin": {
-    "automated-repo-setup": "build/main/bin/ars.js",
-    "ars": "build/main/bin/ars.js"
+    "automated-repo-setup": "dist/index.mjs",
+    "ars": "dist/index.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx tsc && node build/main/main.js"
+    "build": "tsup src/main/main.ts --format esm --treeshake --target node20 --out-dir build",
+    "start": "npm run build && node build/main.mjs"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^18.0.0",
-    "@types/uuid": "^7.0.0",
-    "typescript": "^5.0.0"
+    "@types/node": "^20.1.4",
+    "@types/uuid": "^9.0.1",
+    "typescript": "^5.0.4",
+    "tsup": "^6.7.0"
   },
   "dependencies": {
-    "dotenv": "^8.1.0",
-    "gitlab": "^14.2.2",
-    "uuid": "^7.0.2"
+    "dotenv": "^16.0.3",
+    "@gitbeaker/rest": "^38.5.0",
+    "uuid": "^9.0.0"
   }
 }

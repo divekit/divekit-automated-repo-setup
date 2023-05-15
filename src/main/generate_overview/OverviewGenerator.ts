@@ -7,10 +7,9 @@ import {ConfigManager} from "../config/ConfigManager";
 import {ContentProvider} from "../content_manager/ContentProvider";
 import {Logger} from "../logging/Logger";
 
-
 export class OverviewGenerator {
     
-    private readonly overviewFolder = path.join(__dirname, '..', '..', '..', 'resources', 'overview');
+    private readonly overviewFolder = path.join('./resources/overview');
 
 
     constructor(public readonly repositoryAdapter: RepositoryAdapter) { 

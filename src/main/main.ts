@@ -1,5 +1,4 @@
 import { Logger } from "./logging/Logger";
-import { LogLevel } from "./logging/LogLevel";
 import { RepositoryCreator } from "./repository_creation/RepositoryCreator";
 
 

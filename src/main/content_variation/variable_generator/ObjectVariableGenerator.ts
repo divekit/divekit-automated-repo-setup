@@ -1,4 +1,3 @@
-import { SerializationUtils } from "../SerializationUtils";
 import { IndividualSelection } from "../selections/IndividualSelection";
 import { ObjectRecord } from "../config_records/object/ObjectRecord";
 import { ObjectVariationRecord } from "../config_records/object/ObjectVariationRecord";

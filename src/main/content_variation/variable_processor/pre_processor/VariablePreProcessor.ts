@@ -1,6 +1,5 @@
 import { VariationsConfig } from '../../config_records/VariationsConfig';
 import { ObjectRecord } from '../../config_records/object/ObjectRecord';
-import { VariableExtensionsConfig } from "../../config_records/VariableExtensionsConfig";
 import { VariableExtensionManager } from './VariableExtensionManager';
 import { NestedObjectVariationRecord } from '../../config_records/object/NestedObjectVariationRecord';
 import { VariableExtensionCollectionRecord } from '../../config_records/extension/VariableExtensionCollectionRecord';
