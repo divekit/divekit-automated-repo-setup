@@ -6,4 +6,4 @@ stages:
 trigger_build:
   stage: deploy
   script:
-    - "curl -X POST -F token=$TEST_REPO_TRIGGER_TOKEN -F ref=master $TEST_REPO_TRIGGER_URL"
+    - "curl -X POST -F token=$TEST_REPO_TRIGGER_TOKEN -F ref=main $TEST_REPO_TRIGGER_URL"
