@@ -31,7 +31,8 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     }
 
     public async retrieveOriginFiles(): Promise<RepositoryFile[]> {
-        let tree: any = await gitlab.Repositories.allRepositoryTrees(this.repositoryConfig.remote.originRepositoryId);
+        let tree: any = await gitlab.Repositories.allRepositoryTrees(this.repositoryConfig.remote.originRepositoryId,
+            {recursive: true, orderBy: "path", perPage: 100, sort: "asc", ref: mainBranch});
         let repositoryFiles: RepositoryFile[] = [];
 
         for (var treeFile of tree) {
