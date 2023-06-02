@@ -141,6 +141,14 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         if (!(await this.doesVariableExistInRepository(this.testRepository!, 'CODE_REPO_URL'))) {
             await gitlab.ProjectVariables.create(this.testRepository!.id, 'CODE_REPO_URL', this.codeRepository!.web_url);
         }
+        if (!(await this.doesVariableExistInRepository(this.testRepository!, 'CODE_REPO_TOKEN'))) {
+            const options = {
+                protected: true,
+                masked: true
+            }
+            const projectToken = await gitlab.ProjectAccessTokens.create(this.codeRepository!.id, "ACCESS_TOKEN", ['read_api'])
+            await gitlab.ProjectVariables.create(this.testRepository!.id, 'CODE_REPO_TOKEN', projectToken.token as string , options);
+        }
         if (!(await this.doesVariableExistInRepository(this.codeRepository!, 'TEST_REPO_TRIGGER_URL'))) {
             const triggerURL = `${this.testRepository!._links.self}/trigger/pipeline`;
             await gitlab.ProjectVariables.create(this.codeRepository!.id, 'TEST_REPO_TRIGGER_URL', triggerURL);
