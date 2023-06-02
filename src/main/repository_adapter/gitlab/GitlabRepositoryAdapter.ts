@@ -132,7 +132,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
 
         const json = await response.json();
         if((json.data.ciJobTokenScopeAddProject.errors as any[]).length > 0) {
-            throw new Error("Errors occured while setting inbound permissions");
+            throw new Error("Errors occured while setting inbound permissions: " + json.data.ciJobTokenScopeAddProject.errors);
         }
     }
 

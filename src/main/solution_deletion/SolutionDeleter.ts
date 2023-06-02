@@ -1,4 +1,5 @@
 import { ConfigManager } from "../config/ConfigManager";
+import {Logger} from "../logging/Logger";
 
 export interface SolutionDeleteResult {
     deleteFile: boolean,
@@ -26,7 +27,14 @@ export class SolutionDeleter {
     }
 
     private shouldFileBeDeleted(fileContent: string) {
-        return fileContent.includes(this.originRepositoryConfig.solutionDeletion.deleteFileKey);
+        let shouldFileBeDeleted = false;
+        try {
+            shouldFileBeDeleted = fileContent.includes(this.originRepositoryConfig.solutionDeletion.deleteFileKey);
+        } catch (error) {
+            Logger.getInstance().error(`Error while checking if file should be deleted: ${error}`);
+            throw error;
+        }
+        return shouldFileBeDeleted;
     }
 
     private changeFileContent(fileContent: string) {

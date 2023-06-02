@@ -90,16 +90,19 @@ export class ContentProvider {
 
     private async getIndividualRepositoryFiles(originRepositoryFiles: RepositoryFile[]): Promise<RepositoryFile[]> {
         let individualRepositoryFiles: RepositoryFile[] = [];
-        
+
         let contentReplacer: ContentReplacer | undefined = undefined;
         if (this.individualRepository.individualVariation) {
             contentReplacer = new ContentReplacer(this.individualRepository);
         }
 
         for (var originRepositoryFile of originRepositoryFiles) {
+            let doIndividualizeFile = true;
+            if ( originRepositoryFile.path.includes(".jar") ) {
+                doIndividualizeFile = false;
+            }
             let individualRepositoryFile: RepositoryFile = { path: originRepositoryFile.path, content: originRepositoryFile.content, encoding: originRepositoryFile.encoding };
-            
-            if (contentReplacer) {
+            if (contentReplacer && doIndividualizeFile) {
                 individualRepositoryFile = contentReplacer.replacePathAndContent(individualRepositoryFile);
             }
 
