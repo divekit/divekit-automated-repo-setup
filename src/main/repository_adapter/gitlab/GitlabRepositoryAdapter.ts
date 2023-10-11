@@ -146,7 +146,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
                 protected: true,
                 masked: true
             }
-            const projectToken = await gitlab.ProjectAccessTokens.create(this.codeRepository!.id, "ACCESS_TOKEN", ['read_api'])
+            const projectToken = await gitlab.ProjectAccessTokens.create(this.codeRepository!.id, "ACCESS_TOKEN", ['read_api'], {expiresAt: "2023-12-31"} )
             await gitlab.ProjectVariables.create(this.testRepository!.id, 'CODE_REPO_TOKEN', projectToken.token as string , options);
         }
         if (!(await this.doesVariableExistInRepository(this.codeRepository!, 'TEST_REPO_TRIGGER_URL'))) {
