@@ -8,7 +8,8 @@ const main = async () => {
         await repositoryCreator.generateRepositories();
     } catch (error) {
         Logger.getInstance().error(<any> error);
-    }   
+        console.error(error)
+    }
 }
 
 main();
