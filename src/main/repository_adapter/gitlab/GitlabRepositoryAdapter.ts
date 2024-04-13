@@ -3,7 +3,14 @@ import * as readline from 'node:readline/promises';
 import { URL } from 'node:url';
 import { RepositoryAdapter } from "../RepositoryAdapter";
 import { RepositoryFile } from "../../content_manager/RepositoryFile";
-import { AccessLevel, CommitSchema, Gitlab, UserSchema, ProjectVariableSchema, ExpandedProjectSchema } from "@gitbeaker/rest";
+import {
+    AccessLevel,
+//    CommitSchema,
+    Gitlab,
+    UserSchema,
+    ProjectVariableSchema,
+    ProjectSchema
+} from "@gitbeaker/rest";
 import { ConfigManager } from "../../config/ConfigManager";
 import { EncodingRetriever } from "../../content_manager/EncodingRetriever";
 import { IndividualRepository } from "../../repository_creation/IndividualRepository";
@@ -12,7 +19,7 @@ import { Logger } from "../../logging/Logger";
 dotenv.config();
 const gitlab = new Gitlab({
     host: process.env.HOST,
-    token: process.env.API_TOKEN,
+    token: process.env.API_TOKEN!,
 });
 
 // Get main branch name from environment variable or default to "master"
@@ -20,8 +27,8 @@ const mainBranch = process.env.DIVEKIT_MAINBRANCH_NAME || "master";
 
 export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO create POJOs for any types
 
-    private codeRepository: ExpandedProjectSchema | null = null;
-    private testRepository: ExpandedProjectSchema | null = null;
+    private codeRepository: ProjectSchema | null = null;
+    private testRepository: ProjectSchema | null = null;
 
     private repositoryConfig = ConfigManager.getInstance().getRepositoryConfig();
 
@@ -53,13 +60,13 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     public async createCodeRepository(repositoryName: string): Promise<void> {
         let existingRepository = await this.searchForRepository(repositoryName, this.repositoryConfig.remote.codeRepositoryTargetGroupId);
         this.codeRepository = existingRepository ? existingRepository :
-            await gitlab.Projects.create({namespaceId: this.repositoryConfig.remote.codeRepositoryTargetGroupId, name: repositoryName}) as ExpandedProjectSchema;
+            await gitlab.Projects.create({namespaceId: this.repositoryConfig.remote.codeRepositoryTargetGroupId, name: repositoryName}) as ProjectSchema;
     }
 
     public async createTestRepository(repositoryName: string): Promise<void> {
         let existingRepository = await this.searchForRepository(repositoryName, this.repositoryConfig.remote.testRepositoryTargetGroupId);
         this.testRepository = existingRepository ? existingRepository :
-            await gitlab.Projects.create({namespaceId: this.repositoryConfig.remote.testRepositoryTargetGroupId, name: repositoryName}) as ExpandedProjectSchema;
+            await gitlab.Projects.create({namespaceId: this.repositoryConfig.remote.testRepositoryTargetGroupId, name: repositoryName}) as ProjectSchema;
     }
 
     public async addMembersToCodeRepository(members: string[] | undefined): Promise<void> {
@@ -81,8 +88,8 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         }
     }
 
-    private async searchForRepository(repositoryName: string, groupId: number): Promise<ExpandedProjectSchema | null> {
-        let foundProjects = (await gitlab.Projects.search(repositoryName, {showExpanded: true})).data as ExpandedProjectSchema[];
+    private async searchForRepository(repositoryName: string, groupId: number): Promise<ProjectSchema | null> {
+        let foundProjects = (await gitlab.Projects.search(repositoryName, {showExpanded: true})).data as ProjectSchema[];
 
         for (let foundProject of foundProjects) {
             if (foundProject.namespace.id == groupId) {
@@ -146,7 +153,8 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
                 protected: true,
                 masked: true
             }
-            const projectToken = await gitlab.ProjectAccessTokens.create(this.codeRepository!.id, "ACCESS_TOKEN", ['read_api'], {expiresAt: "2023-12-31"} )
+            const projectToken = await gitlab.ProjectAccessTokens.create(this.codeRepository!.id,
+                "ACCESS_TOKEN", ['read_api'], "2024-12-31" )
             await gitlab.ProjectVariables.create(this.testRepository!.id, 'CODE_REPO_TOKEN', projectToken.token as string , options);
         }
         if (!(await this.doesVariableExistInRepository(this.codeRepository!, 'TEST_REPO_TRIGGER_URL'))) {
@@ -161,7 +169,7 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         await this.setInboundTokenPermissions();
     }
 
-    private async doesVariableExistInRepository(repository: ExpandedProjectSchema, variableName: string): Promise<boolean> {
+    private async doesVariableExistInRepository(repository: ProjectSchema, variableName: string): Promise<boolean> {
         let foundVariables = await gitlab.ProjectVariables.all(repository.id) as ProjectVariableSchema[];
 
         for (let foundVariable of foundVariables) {
@@ -176,17 +184,25 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
     public async provideContentToCodeRepository(codeRepositoryFiles: RepositoryFile[]): Promise<void> {
         let codeRepositoryCommitActions = this.convertFileArrayToCommits(codeRepositoryFiles);
 
-        if (!(await this.IsAtLeastOneCommitInRepository(this.codeRepository!))) {
+        // this Gitlab API call seems to produce error 500 consistently
+        // (try https://git.archi-lab.io/api/v4/projects/<id>/repository/commits with <id> being a valid project id,
+        //  for a freshly created, EMPTY repo - it will return 500)
+        // Therefore we skip this call.
+        //if (!(await this.IsAtLeastOneCommitInRepository(this.codeRepository!))) {
             await gitlab.Commits.create(this.codeRepository!.id, mainBranch, "initial commit", codeRepositoryCommitActions);
-        }
+        //}
     }
 
     public async provideContentToTestRepository(testRepositoryFiles: RepositoryFile[]): Promise<void> {
         let testRepositoryCommitActions = this.convertFileArrayToCommits(testRepositoryFiles);
 
-        if (this.testRepository && testRepositoryCommitActions.length > 0 && !(await this.IsAtLeastOneCommitInRepository(this.testRepository!))) {
-            await gitlab.Commits.create(this.testRepository.id, mainBranch, "initial commit", testRepositoryCommitActions);
-        }
+        // this Gitlab API call seems to produce error 500 consistently
+        // (try https://git.archi-lab.io/api/v4/projects/<id>/repository/commits with <id> being a valid project id,
+        //  for a freshly created, EMPTY repo - it will return 500)
+        // Therefore we skip this call.
+        //if (this.testRepository && testRepositoryCommitActions.length > 0 && !(await this.IsAtLeastOneCommitInRepository(this.testRepository!))) {
+            await gitlab.Commits.create(this.testRepository!.id, mainBranch, "initial commit", testRepositoryCommitActions);
+        //}
     }
 
     private convertFileArrayToCommits(repositoryFiles: RepositoryFile[]): any[] {
@@ -199,10 +215,12 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         return commitActions;
     }
 
-    private async IsAtLeastOneCommitInRepository(repository: ExpandedProjectSchema): Promise<boolean> {
+    /*
+    private async IsAtLeastOneCommitInRepository(repository: ProjectSchema): Promise<boolean> {
         let commits = await gitlab.Commits.all(repository.id) as CommitSchema[];
         return commits.length > 0;
     }
+    */
 
     public getLinkToTestPage(): string {
         let link;
@@ -227,11 +245,11 @@ export class GitlabRepositoryAdapter implements RepositoryAdapter { // TODO crea
         return overviewLink;
     }
 
-    private getAccessLevel(): AccessLevel {
+    private getAccessLevel(): number {
         if (this.repositoryConfig.remote.addUsersAsGuests) {
-            return 10;
+            return AccessLevel.GUEST;
         } else {
-            return 40;
+            return AccessLevel.MAINTAINER;
         }
     }
 

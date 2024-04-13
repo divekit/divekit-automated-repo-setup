@@ -24,12 +24,12 @@
   "devDependencies": {
     "@types/node": "^20.1.4",
     "@types/uuid": "^9.0.1",
-    "typescript": "^5.0.4",
-    "tsup": "^6.7.0"
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@gitbeaker/rest": "^40.0.2",
     "dotenv": "^16.0.3",
-    "@gitbeaker/rest": "^38.5.0",
     "uuid": "^9.0.0"
   }
 }
