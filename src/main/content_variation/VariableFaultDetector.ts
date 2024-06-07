@@ -11,7 +11,7 @@ import { VariablePreProcessor } from "./variable_processor/pre_processor/Variabl
 
 export class VariableFaultDetector {
 
-    private readonly ignoreFilesContains = [ "norepo" ];
+    private ignoreFilesContains = [ "norepo" ];
 
     private readonly variableDelimiter = ConfigManager.getInstance().getOriginRepositoryConfig().variables.variableDelimiter;
 
@@ -22,6 +22,7 @@ export class VariableFaultDetector {
 
     constructor(private individualRepository: IndividualRepository) {
         this.identifyBlackListedVariableValues(individualRepository.individualVariation!);
+        this.identifyIgnoreFilesContains();
     }
 
     public identifyBlackListedVariableValues(individualVariation: IndividualVariation) {
@@ -33,6 +34,15 @@ export class VariableFaultDetector {
             if (!this.variableValueListContainsItem(allIndividualVariableValues, variableValue) 
                 && !this.variableValueListContainsItem(this.originRepositoryConfig.warnings.variableValueWarnings.ignoreList, variableValue)) {
                 this.blackListedVariableValues.push(variableValue);
+            }
+        }
+    }
+
+    public identifyIgnoreFilesContains() {
+        const ignoreFileList = this.originRepositoryConfig?.warnings?.variableValueWarnings?.ignoreFileList;
+        if (Array.isArray(ignoreFileList)) {
+            for (let filename of ignoreFileList) {
+                this.ignoreFilesContains.push(filename);
             }
         }
     }

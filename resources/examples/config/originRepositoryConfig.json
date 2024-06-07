@@ -20,6 +20,11 @@
             "ignoreList": [
                 "name",
                 "type"
+            ],
+            "ignoreFileList": [
+                "individualizationCheck_testrepo.json",
+                "variationsConfig_testrepo.json",
+                "IndividualizationTest_testrepo.java"
             ]
         }
     }

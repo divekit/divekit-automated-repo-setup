@@ -1,5 +1,6 @@
 
 export interface VariableValueWarningsRecord {
     typeWhiteList: string[],
-    ignoreList: string[]
+    ignoreList: string[],
+    ignoreFileList: string[]
 }

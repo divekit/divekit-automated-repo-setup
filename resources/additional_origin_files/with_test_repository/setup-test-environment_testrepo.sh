@@ -10,6 +10,7 @@ git clone "https://gitlab-ci-token:${CI_JOB_TOKEN}@$REPO_URL" student_repo
 
 # Copy code files with override from cloned repo
 cp -R "student_repo/src/main" "./src"
+#cp -R "student_repo/src/test/java/thkoeln/archilab/ecommerce/test/domainprimitives/owntests" "./src/test/java/thkoeln/archilab/ecommerce/test/domainprimitives"
 
 echo "The following files exist within the src folder:"
 find "./src" -print
